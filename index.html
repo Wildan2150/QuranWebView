@@ -6,290 +6,561 @@
   <title>Quran WebView</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+  <style>
+    .page-transition {
+      transition: opacity 100ms ease-in-out;
+    }
+    .surah-list {
+      scrollbar-width: thin;
+      scrollbar-color: #22c55e #f0f0f0;
+    }
+    .surah-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    .surah-list::-webkit-scrollbar-thumb {
+      background-color: #22c55e;
+      border-radius: 3px;
+    }
+    .juz-progress {
+      height: 4px;
+      background-color: #e5e7eb;
+    }
+    .juz-progress-fill {
+      height: 100%;
+      background-color: #22c55e;
+      transition: width 0.3s ease;
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <!-- Header Section -->
+  <div class="bg-green-700 text-white py-4">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0">
+        <a href="#" onclick="location.reload();" class="md:text-3xl sm:text-xl text-3xl font-bold flex items-center">
+          <i class="fas fa-quran md:mr-5 md:text-5xl sm:mr-5 sm:text-xl mr-5 text-3xl"></i> Quran WebView
+        </a>       
+        
+        <div class="w-full md:w-auto flex flex-col space-y-2 md:space-y-0 md:flex-row md:space-x-3">
+          <!-- Surah Selector -->
+          <div class="relative flex-1 md:w-64">
+            <button id="surah-dropdown-btn" class="w-full bg-white text-green-900 p-2 rounded flex justify-between items-center">
+              <span id="current-surah">Select Surah</span>
+              <i class="fas fa-chevron-down ml-2 transition-transform duration-200"></i>
+            </button>
+            <div id="surah-dropdown" class="hidden absolute z-20 mt-1 w-full bg-white rounded-lg shadow-xl border border-gray-200">
+              <div class="p-3 border-b">
+                <div class="relative">
+                  <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                  <input type="text" id="surah-search" placeholder="Search Surah..." 
+                         class="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+              </div>
+              <div class="surah-list max-h-80 overflow-y-auto">
+                <div id="surah-list" class="divide-y divide-gray-100"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Juz Selector -->
+          <div class="relative flex-1 md:w-40">
+            <button id="juz-dropdown-btn" class="w-full bg-white text-green-900 p-2 rounded flex justify-between items-center">
+              <span id="current-juz">Select Juz</span>
+              <i class="fas fa-chevron-down ml-2 transition-transform duration-200"></i>
+            </button>
+            <div id="juz-dropdown" class="hidden absolute z-20 mt-1 w-full bg-white rounded-lg shadow-xl border border-gray-200 max-h-80 overflow-y-auto">
+              <div id="juz-list" class="divide-y divide-gray-100"></div>
+            </div>
+          </div>
+
+          <!-- Page Controls -->
+          <div class="flex items-center space-x-0 bg-white rounded p-1">
+            <span class="inline text-green-900 px-2">Page:</span>
+            <input class="w-16 py-1 text-green-900 text-center" 
+                   id="page-number" type="text" value="1">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container mx-auto py-4 md:py-6 px-4">
+    <!-- Juz Progress Indicator -->
+    <div class="mb-4 bg-white p-3 rounded-lg shadow">
+      <div class="flex justify-between text-sm text-gray-600 mb-1">
+        <span id="current-juz-display">Juz 1</span>
+        <span id="juz-page-range">Page 1-20</span>
+      </div>
+      <div class="juz-progress rounded-full">
+        <div id="juz-progress-fill" class="juz-progress-fill rounded-full" style="width: 5%"></div>
+      </div>
+    </div>
+
+    <div class="flex justify-center flex-row-reverse">
+      <!-- Left Page -->
+      <div class="bg-white shadow-lg rounded-lg p-3 md:p-4">
+        <img alt="Quran page" 
+             class="w-full max-h-[85vh] md:max-h-[90vh] page-transition opacity-100" 
+             id="page-left" 
+             src="https://media.qurankemenag.net/khat2/QK_001.webp">
+      </div>
+      
+      <!-- Right Page -->
+      <div class="bg-white shadow-lg rounded-lg p-3 md:p-4 ml-3 md:ml-5" id="page-right-container">
+        <img alt="Quran page" 
+             class="w-full max-h-[85vh] md:max-h-[90vh] page-transition opacity-100" 
+             id="page-right" 
+             src="https://media.qurankemenag.net/khat2/QK_002.webp">
+      </div>
+    </div>
+    
+    <!-- Navigation Controls -->
+  <div class="flex justify-center mt-6 space-x-4 lg:justify-between lg:space-x-0">
+    <button id="next-btn" class="bg-green-700 text-white px-5 py-2 rounded-full shadow-md hover:bg-green-800 transition lg:fixed lg:top-1/2 lg:left-4 lg:transform lg:-translate-y-1/2 lg:bg-transparent lg:hover:bg-transparent lg:shadow-none lg:p-0 lg:text-gray-300 lg:hover:text-green-700 lg:text-5xl">
+      <i class="fas fa-arrow-left mr-1 lg:hidden"></i>
+      <span class="lg:hidden">Next</span>
+      <i class="fa-solid fa-circle-chevron-left hidden lg:inline"></i>
+    </button>
+    <button id="prev-btn" class="bg-green-700 text-white px-5 py-2 rounded-full shadow-md hover:bg-green-800 transition lg:fixed lg:top-1/2 lg:right-4 lg:transform lg:-translate-y-1/2 lg:bg-transparent lg:hover:bg-transparent lg:shadow-none lg:p-0 lg:text-gray-300 lg:hover:text-green-700 lg:text-5xl">
+      <span class="lg:hidden">Previous</span>
+      <i class="fas fa-arrow-right ml-1 lg:hidden"></i>
+      
+      <i class="fa-solid fa-circle-chevron-right hidden lg:inline"></i>
+    </button>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white py-4 mt-6 w-full m-0">
+    <div class="container mx-auto px-4 max-w-screen-lg text-center">
+      <p class="text-sm">
+        <i class="fas fa-info-circle mr-1"></i> This Quran page is sourced from 
+        <a href="https://quran.kemenag.go.id/" target="_blank" class="text-green-400 hover:underline">Qur'an Kemenag</a>
+      </p>
+    </div>
+  </footer>
+
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      // State variables
+    // Complete Surah Data (Madani Mushaf - 604 pages)
+    const surahData = [
+      { number: 1, name: "Al-Fātiḥah", page: 1, juz: 1, revelation: "Meccan" },
+      { number: 2, name: "Al-Baqarah", page: 2, juz: [1,2,3], revelation: "Medinan" },
+      { number: 3, name: "Āli 'Imrān", page: 50, juz: [3,4], revelation: "Medinan" },
+      { number: 4, name: "An-Nisā'", page: 77, juz: [4,5,6], revelation: "Medinan" },
+      { number: 5, name: "Al-Mā'idah", page: 106, juz: [6,7], revelation: "Medinan" },
+      { number: 6, name: "Al-An'ām", page: 128, juz: [7,8], revelation: "Meccan" },
+      { number: 7, name: "Al-A'rāf", page: 151, juz: [8,9], revelation: "Meccan" },
+      { number: 8, name: "Al-Anfāl", page: 177, juz: [9,10], revelation: "Medinan" },
+      { number: 9, name: "At-Taubah", page: 187, juz: [10,11], revelation: "Medinan" },
+      { number: 10, name: "Yūnus", page: 208, juz: [11], revelation: "Meccan" },
+      { number: 11, name: "Hūd", page: 221, juz: [11,12], revelation: "Meccan" },
+      { number: 12, name: "Yūsuf", page: 235, juz: [12,13], revelation: "Meccan" },
+      { number: 13, name: "Ar-Ra'd", page: 249, juz: [13], revelation: "Medinan" },
+      { number: 14, name: "Ibrāhīm", page: 255, juz: [13], revelation: "Meccan" },
+      { number: 15, name: "Al-Ḥijr", page: 262, juz: [14], revelation: "Meccan" },
+      { number: 16, name: "An-Naḥl", page: 267, juz: [14], revelation: "Meccan" },
+      { number: 17, name: "Al-Isrā'", page: 282, juz: [15], revelation: "Meccan" },
+      { number: 18, name: "Al-Kahf", page: 293, juz: [15,16], revelation: "Meccan" },
+      { number: 19, name: "Maryam", page: 305, juz: [16], revelation: "Meccan" },
+      { number: 20, name: "Ṭāhā", page: 312, juz: [16], revelation: "Meccan" },
+      { number: 21, name: "Al-Anbiyā'", page: 322, juz: [17], revelation: "Meccan" },
+      { number: 22, name: "Al-Ḥajj", page: 332, juz: [17,18], revelation: "Medinan" },
+      { number: 23, name: "Al-Mu'minūn", page: 342, juz: [18], revelation: "Meccan" },
+      { number: 24, name: "An-Nūr", page: 350, juz: [18], revelation: "Medinan" },
+      { number: 25, name: "Al-Furqān", page: 359, juz: [18,19], revelation: "Meccan" },
+      { number: 26, name: "Ash-Shu'arā'", page: 367, juz: [19], revelation: "Meccan" },
+      { number: 27, name: "An-Naml", page: 377, juz: [19,20], revelation: "Meccan" },
+      { number: 28, name: "Al-Qaṣaṣ", page: 385, juz: [20], revelation: "Meccan" },
+      { number: 29, name: "Al-'Ankabūt", page: 396, juz: [20,21], revelation: "Meccan" },
+      { number: 30, name: "Ar-Rūm", page: 404, juz: [21], revelation: "Meccan" },
+      { number: 31, name: "Luqmān", page: 411, juz: [21], revelation: "Meccan" },
+      { number: 32, name: "As-Sajdah", page: 415, juz: [21], revelation: "Meccan" },
+      { number: 33, name: "Al-Aḥzāb", page: 418, juz: [21,22], revelation: "Medinan" },
+      { number: 34, name: "Saba'", page: 428, juz: [22], revelation: "Meccan" },
+      { number: 35, name: "Fāṭir", page: 434, juz: [22], revelation: "Meccan" },
+      { number: 36, name: "Yāsīn", page: 440, juz: [22,23], revelation: "Meccan" },
+      { number: 37, name: "Aṣ-Ṣāffāt", page: 446, juz: [23], revelation: "Meccan" },
+      { number: 38, name: "Ṣād", page: 453, juz: [23], revelation: "Meccan" },
+      { number: 39, name: "Az-Zumar", page: 458, juz: [23,24], revelation: "Meccan" },
+      { number: 40, name: "Ghāfir", page: 467, juz: [24], revelation: "Meccan" },
+      { number: 41, name: "Fuṣṣilat", page: 477, juz: [24,25], revelation: "Meccan" },
+      { number: 42, name: "Ash-Shūrā", page: 483, juz: [25], revelation: "Meccan" },
+      { number: 43, name: "Az-Zukhruf", page: 489, juz: [25], revelation: "Meccan" },
+      { number: 44, name: "Ad-Dukhān", page: 496, juz: [25], revelation: "Meccan" },
+      { number: 45, name: "Al-Jāthiyah", page: 499, juz: [25], revelation: "Meccan" },
+      { number: 46, name: "Al-Aḥqāf", page: 502, juz: [26], revelation: "Meccan" },
+      { number: 47, name: "Muḥammad", page: 507, juz: [26], revelation: "Medinan" },
+      { number: 48, name: "Al-Fatḥ", page: 511, juz: [26], revelation: "Medinan" },
+      { number: 49, name: "Al-Ḥujurāt", page: 515, juz: [26], revelation: "Medinan" },
+      { number: 50, name: "Qāf", page: 518, juz: [26], revelation: "Meccan" },
+      { number: 51, name: "Adh-Dhāriyāt", page: 520, juz: [26,27], revelation: "Meccan" },
+      { number: 52, name: "Aṭ-Ṭūr", page: 523, juz: [27], revelation: "Meccan" },
+      { number: 53, name: "An-Najm", page: 526, juz: [27], revelation: "Meccan" },
+      { number: 54, name: "Al-Qamar", page: 528, juz: [27], revelation: "Meccan" },
+      { number: 55, name: "Ar-Raḥmān", page: 531, juz: [27], revelation: "Medinan" },
+      { number: 56, name: "Al-Wāqi'ah", page: 534, juz: [27], revelation: "Meccan" },
+      { number: 57, name: "Al-Ḥadīd", page: 537, juz: [27], revelation: "Medinan" },
+      { number: 58, name: "Al-Mujādilah", page: 542, juz: [28], revelation: "Medinan" },
+      { number: 59, name: "Al-Ḥashr", page: 545, juz: [28], revelation: "Medinan" },
+      { number: 60, name: "Al-Mumtaḥanah", page: 549, juz: [28], revelation: "Medinan" },
+      { number: 61, name: "Aṣ-Ṣaff", page: 551, juz: [28], revelation: "Medinan" },
+      { number: 62, name: "Al-Jumu'ah", page: 553, juz: [28], revelation: "Medinan" },
+      { number: 63, name: "Al-Munāfiqūn", page: 554, juz: [28], revelation: "Medinan" },
+      { number: 64, name: "At-Taghābun", page: 556, juz: [28], revelation: "Medinan" },
+      { number: 65, name: "Aṭ-Ṭalāq", page: 558, juz: [28], revelation: "Medinan" },
+      { number: 66, name: "At-Taḥrīm", page: 560, juz: [28], revelation: "Medinan" },
+      { number: 67, name: "Al-Mulk", page: 562, juz: [29], revelation: "Meccan" },
+      { number: 68, name: "Al-Qalam", page: 564, juz: [29], revelation: "Meccan" },
+      { number: 69, name: "Al-Ḥāqqah", page: 566, juz: [29], revelation: "Meccan" },
+      { number: 70, name: "Al-Ma'ārij", page: 568, juz: [29], revelation: "Meccan" },
+      { number: 71, name: "Nūḥ", page: 570, juz: [29], revelation: "Meccan" },
+      { number: 72, name: "Al-Jinn", page: 572, juz: [29], revelation: "Meccan" },
+      { number: 73, name: "Al-Muzzammil", page: 574, juz: [29], revelation: "Meccan" },
+      { number: 74, name: "Al-Muddaththir", page: 575, juz: [29], revelation: "Meccan" },
+      { number: 75, name: "Al-Qiyāmah", page: 577, juz: [29], revelation: "Meccan" },
+      { number: 76, name: "Al-Insān", page: 578, juz: [29], revelation: "Medinan" },
+      { number: 77, name: "Al-Mursalāt", page: 580, juz: [29], revelation: "Meccan" },
+      { number: 78, name: "An-Naba'", page: 582, juz: [30], revelation: "Meccan" },
+      { number: 79, name: "An-Nāzi'āt", page: 583, juz: [30], revelation: "Meccan" },
+      { number: 80, name: "'Abasa", page: 585, juz: [30], revelation: "Meccan" },
+      { number: 81, name: "At-Takwīr", page: 586, juz: [30], revelation: "Meccan" },
+      { number: 82, name: "Al-Infiṭār", page: 587, juz: [30], revelation: "Meccan" },
+      { number: 83, name: "Al-Muṭaffifīn", page: 587, juz: [30], revelation: "Meccan" },
+      { number: 84, name: "Al-Inshiqāq", page: 589, juz: [30], revelation: "Meccan" },
+      { number: 85, name: "Al-Burūj", page: 590, juz: [30], revelation: "Meccan" },
+      { number: 86, name: "Aṭ-Ṭāriq", page: 591, juz: [30], revelation: "Meccan" },
+      { number: 87, name: "Al-A'lā", page: 591, juz: [30], revelation: "Meccan" },
+      { number: 88, name: "Al-Ghāshiyah", page: 592, juz: [30], revelation: "Meccan" },
+      { number: 89, name: "Al-Fajr", page: 593, juz: [30], revelation: "Meccan" },
+      { number: 90, name: "Al-Balad", page: 594, juz: [30], revelation: "Meccan" },
+      { number: 91, name: "Ash-Shams", page: 595, juz: [30], revelation: "Meccan" },
+      { number: 92, name: "Al-Layl", page: 595, juz: [30], revelation: "Meccan" },
+      { number: 93, name: "Aḍ-Ḍuḥā", page: 596, juz: [30], revelation: "Meccan" },
+      { number: 94, name: "Ash-Sharḥ", page: 596, juz: [30], revelation: "Meccan" },
+      { number: 95, name: "At-Tīn", page: 597, juz: [30], revelation: "Meccan" },
+      { number: 96, name: "Al-'Alaq", page: 597, juz: [30], revelation: "Meccan" },
+      { number: 97, name: "Al-Qadr", page: 598, juz: [30], revelation: "Meccan" },
+      { number: 98, name: "Al-Bayyinah", page: 598, juz: [30], revelation: "Medinan" },
+      { number: 99, name: "Az-Zalzalah", page: 599, juz: [30], revelation: "Medinan" },
+      { number: 100, name: "Al-'Ādiyāt", page: 599, juz: [30], revelation: "Meccan" },
+      { number: 101, name: "Al-Qāri'ah", page: 600, juz: [30], revelation: "Meccan" },
+      { number: 102, name: "At-Takāthur", page: 600, juz: [30], revelation: "Meccan" },
+      { number: 103, name: "Al-'Aṣr", page: 601, juz: [30], revelation: "Meccan" },
+      { number: 104, name: "Al-Humazah", page: 601, juz: [30], revelation: "Meccan" },
+      { number: 105, name: "Al-Fīl", page: 601, juz: [30], revelation: "Meccan" },
+      { number: 106, name: "Quraysh", page: 602, juz: [30], revelation: "Meccan" },
+      { number: 107, name: "Al-Mā'ūn", page: 602, juz: [30], revelation: "Meccan" },
+      { number: 108, name: "Al-Kawthar", page: 602, juz: [30], revelation: "Meccan" },
+      { number: 109, name: "Al-Kāfirūn", page: 603, juz: [30], revelation: "Meccan" },
+      { number: 110, name: "An-Naṣr", page: 603, juz: [30], revelation: "Medinan" },
+      { number: 111, name: "Al-Masad", page: 603, juz: [30], revelation: "Meccan" },
+      { number: 112, name: "Al-Ikhlāṣ", page: 604, juz: [30], revelation: "Meccan" },
+      { number: 113, name: "Al-Falaq", page: 604, juz: [30], revelation: "Meccan" },
+      { number: 114, name: "An-Nās", page: 604, juz: [30], revelation: "Meccan" }
+    ];
+
+    const juzInfo = [
+    { number: 1, start: 1, end: 21, surahs: [1, 2] },
+    { number: 2, start: 22, end: 41, surahs: [2] },
+    { number: 3, start: 42, end: 61, surahs: [2, 3] },
+    { number: 4, start: 62, end: 81, surahs: [3, 4] },
+    { number: 5, start: 82, end: 101, surahs: [4] },
+    { number: 6, start: 102, end: 121, surahs: [4, 5] },
+    { number: 7, start: 122, end: 141, surahs: [5, 6] },
+    { number: 8, start: 142, end: 161, surahs: [6, 7] },
+    { number: 9, start: 162, end: 181, surahs: [7, 8] },
+    { number: 10, start: 182, end: 201, surahs: [8, 9] },
+    { number: 11, start: 202, end: 221, surahs: [9, 10] },
+    { number: 12, start: 222, end: 241, surahs: [10, 11] },
+    { number: 13, start: 242, end: 261, surahs: [12, 13] },
+    { number: 14, start: 262, end: 281, surahs: [14, 15] },
+    { number: 15, start: 282, end: 301, surahs: [15, 16] },
+    { number: 16, start: 302, end: 321, surahs: [16, 17] },
+    { number: 17, start: 322, end: 341, surahs: [17, 18] },
+    { number: 18, start: 342, end: 361, surahs: [18, 19, 20] },
+    { number: 19, start: 362, end: 381, surahs: [20, 21, 22] },
+    { number: 20, start: 382, end: 401, surahs: [22, 23, 24] },
+    { number: 21, start: 402, end: 421, surahs: [25, 26] },
+    { number: 22, start: 422, end: 441, surahs: [26, 27] },
+    { number: 23, start: 442, end: 461, surahs: [28, 29, 30] },
+    { number: 24, start: 462, end: 481, surahs: [31, 32, 33] },
+    { number: 25, start: 482, end: 501, surahs: [34, 35, 36] },
+    { number: 26, start: 502, end: 521, surahs: [37, 38, 39] },
+    { number: 27, start: 522, end: 541, surahs: [40, 41, 42] },
+    { number: 28, start: 542, end: 561, surahs: [43, 44, 45, 46] },
+    { number: 29, start: 562, end: 581, surahs: [67, 68, 69, 70, 71] },
+    { number: 30, start: 582, end: 604, surahs: [78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114] },
+  ];
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // State Management
       let currentPage = 1;
       const totalPages = 604;
       let singlePageMode = window.innerWidth < 768;
       let fullscreenActive = false;
       const preloadCache = new Map();
 
-      // Fullscreen handling
-      async function toggleFullscreen() {
-        try {
-          if (!fullscreenActive) {
-            // Try standard API first
-            if (document.documentElement.requestFullscreen) {
-              await document.documentElement.requestFullscreen();
-            } 
-            // Fallback for Safari
-            else if (document.documentElement.webkitRequestFullscreen) {
-              await document.documentElement.webkitRequestFullscreen();
-            }
-            // Fallback for IE/Edge
-            else if (document.documentElement.msRequestFullscreen) {
-              await document.documentElement.msRequestFullscreen();
-            }
-            fullscreenActive = true;
-          } else {
-            // Exit fullscreen
-            if (document.exitFullscreen) {
-              await document.exitFullscreen();
-            } else if (document.webkitExitFullscreen) {
-              await document.webkitExitFullscreen();
-            } else if (document.msExitFullscreen) {
-              await document.msExitFullscreen();
-            }
-            fullscreenActive = false;
-          }
-        } catch (err) {
-          console.error("Fullscreen error:", err);
-          // Fallback CSS fullscreen
-          const container = document.querySelector('.quran-container');
-          if (!fullscreenActive) {
-            container.classList.add('fixed', 'inset-0', 'z-50', 'bg-white', 'p-0', 'm-0');
-            container.style.maxHeight = '100vh';
-            fullscreenActive = true;
-          } else {
-            container.classList.remove('fixed', 'inset-0', 'z-50', 'bg-white', 'p-0', 'm-0');
-            container.style.maxHeight = '';
-            fullscreenActive = false;
-          }
-        }
-        updateButtonStyles();
-      }
+      // DOM Elements
+      const pageLeft = document.getElementById('page-left');
+      const pageRight = document.getElementById('page-right');
+      const pageRightContainer = document.getElementById('page-right-container');
+      const pageNumberInput = document.getElementById('page-number');
+      const currentSurahDisplay = document.getElementById('current-surah');
+      const currentJuzDisplay = document.getElementById('current-juz');
+      const juzPageRange = document.getElementById('juz-page-range');
+      const juzProgressFill = document.getElementById('juz-progress-fill');
+      const currentJuzDisplayTop = document.getElementById('current-juz-display');
 
-      // Listen for fullscreen changes
-      ['fullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange'].forEach(event => {
-        document.addEventListener(event, () => {
-          fullscreenActive = !!(
-            document.fullscreenElement || 
-            document.webkitFullscreenElement || 
-            document.msFullscreenElement
-          );
-          updateButtonStyles();
-        });
-      });
-
-      // Page transition functions
+      // Navigation Functions
       async function updatePages() {
-        const leftPage = document.getElementById('page-left');
-        const rightPage = document.getElementById('page-right');
-        const pageRightElement = document.getElementById('page-right-container');
+        // Fade out current pages
+        pageLeft.classList.add('opacity-0');
+        if (!singlePageMode) pageRight.classList.add('opacity-0');
+        await new Promise(r => setTimeout(r, 100));
 
-        // Fade out both pages simultaneously
-        leftPage.classList.add('opacity-0');
-        if (!singlePageMode) rightPage.classList.add('opacity-0');
-        await new Promise(resolve => setTimeout(resolve, 100));
-
-        // Update content
-        leftPage.src = `https://media.qurankemenag.net/khat2/QK_${String(currentPage).padStart(3, '0')}.webp`;
-        document.getElementById('page-number').value = singlePageMode ? `${currentPage}` : `${currentPage} - ${currentPage + 1}`;
-        document.getElementById('mobile-page-number').value = `${currentPage}`;
+        // Update page sources
+        pageLeft.src = `https://media.qurankemenag.net/khat2/QK_${String(currentPage).padStart(3, '0')}.webp`;
+        pageNumberInput.value = singlePageMode ? currentPage : `${currentPage}-${currentPage + 1}`;
 
         if (singlePageMode) {
-          pageRightElement.style.display = 'none';
+          pageRightContainer.style.display = 'none';
         } else {
-          pageRightElement.style.display = 'block';
-          rightPage.src = `https://media.qurankemenag.net/khat2/QK_${String(currentPage + 1).padStart(3, '0')}.webp`;
+          pageRightContainer.style.display = 'block';
+          pageRight.src = `https://media.qurankemenag.net/khat2/QK_${String(currentPage + 1).padStart(3, '0')}.webp`;
         }
 
-        // Fade in both pages simultaneously
-        leftPage.classList.remove('opacity-0');
-        if (!singlePageMode) rightPage.classList.remove('opacity-0');
+        // Fade in new pages
+        pageLeft.classList.remove('opacity-0');
+        if (!singlePageMode) pageRight.classList.remove('opacity-0');
+
+        // Update current Surah and Juz display
+        updateSurahJuzDisplay();
         preloadPages();
       }
 
-      // Preloading functions
-      function preloadImage(page) {
-        if (!preloadCache.has(page) && page > 0 && page <= totalPages) {
-          const img = new Image();
-          img.src = `https://media.qurankemenag.net/khat2/QK_${String(page).padStart(3, '0')}.webp`;
-          preloadCache.set(page, img);
+      function updateSurahJuzDisplay() {
+        // Find current Surah
+        const currentSurah = surahData.findLast(s => s.page <= currentPage);
+        if (currentSurah) {
+          currentSurahDisplay.textContent = `${currentSurah.number}. ${currentSurah.name}`;
+        }
+
+        // Find current Juz
+        const currentJuz = juzInfo.find(j => currentPage >= j.start && currentPage <= j.end);
+        if (currentJuz) {
+          currentJuzDisplay.textContent = `Juz ${currentJuz.number}`;
+          currentJuzDisplayTop.textContent = `Juz ${currentJuz.number}`;
+          juzPageRange.textContent = `Page ${currentJuz.start}-${currentJuz.end}`;
+          
+          // Calculate progress percentage
+          const progress = ((currentPage - currentJuz.start) / (currentJuz.end - currentJuz.start)) * 100;
+          juzProgressFill.style.width = `${Math.max(2, Math.min(100, progress))}%`;
         }
       }
 
       function preloadPages() {
         const pagesToPreload = singlePageMode
           ? [currentPage - 1, currentPage + 1]
-          : [currentPage - 2, currentPage - 1, currentPage + 1, currentPage + 2];
-        pagesToPreload.forEach(page => preloadImage(page));
+          : [currentPage - 2, currentPage - 1, currentPage + 2, currentPage + 3];
+
+        pagesToPreload.forEach(page => {
+          if (page > 0 && page <= totalPages && !preloadCache.has(page)) {
+            const img = new Image();
+            img.src = `https://media.qurankemenag.net/khat2/QK_${String(page).padStart(3, '0')}.webp`;
+            preloadCache.set(page, img);
+          }
+        });
       }
 
-      // UI update functions
-      function updateButtonStyles() {
-        // Update view mode buttons
-        document.getElementById('single-page-button').classList.toggle('bg-green-900', singlePageMode);
-        document.getElementById('single-page-button').classList.toggle('bg-green-700', !singlePageMode);
-        document.getElementById('two-page-button').classList.toggle('bg-green-900', !singlePageMode);
-        document.getElementById('two-page-button').classList.toggle('bg-green-700', singlePageMode);
-        
-        // Update fullscreen button
-        document.getElementById('fullscreen-button').classList.toggle('bg-green-900', fullscreenActive);
-        document.getElementById('fullscreen-button').classList.toggle('bg-green-700', !fullscreenActive);
-        
-        // Update fullscreen icon
-        const icon = document.querySelector('#fullscreen-button i');
-        icon.className = fullscreenActive ? 'fas fa-compress' : 'fas fa-expand';
-        
-        // Disable two-page mode on mobile
-        const twoPageButton = document.getElementById('two-page-button');
-        if (window.innerWidth < 768) {
-          twoPageButton.disabled = true;
-          twoPageButton.classList.add('opacity-50', 'cursor-not-allowed');
-        } else {
-          twoPageButton.disabled = false;
-          twoPageButton.classList.remove('opacity-50', 'cursor-not-allowed');
+      // Surah Navigation
+      function initSurahSelector() {
+        const surahList = document.getElementById('surah-list');
+        const surahSearch = document.getElementById('surah-search');
+        const surahDropdown = document.getElementById('surah-dropdown');
+        const surahDropdownBtn = document.getElementById('surah-dropdown-btn');
+
+        function populateSurahList(filter = '') {
+          surahList.innerHTML = '';
+          const filtered = surahData.filter(s => 
+            s.name.toLowerCase().includes(filter.toLowerCase()) || 
+            s.number.toString().includes(filter)
+          );
+
+          filtered.forEach(surah => {
+            const item = document.createElement('div');
+            item.className = 'p-3 hover:bg-green-50 cursor-pointer flex justify-between items-center';
+            item.innerHTML = `
+              <div>
+                <span class="font-medium text-green-800">${surah.number}. ${surah.name}</span>
+                <div class="flex items-center mt-1 text-xs text-gray-500">
+                  <span class="mr-2">Page ${surah.page}</span>
+                  <span class="px-1 bg-gray-100 rounded">${surah.revelation}</span>
+                </div>
+              </div>
+              <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                Juz ${Array.isArray(surah.juz) ? surah.juz.join(',') : surah.juz}
+              </span>
+            `;
+            item.addEventListener('click', () => {
+              navigateToSurah(surah.number);
+              surahDropdown.classList.add('hidden');
+              surahDropdownBtn.querySelector('i').classList.remove('fa-chevron-up');
+              surahDropdownBtn.querySelector('i').classList.add('fa-chevron-down');
+            });
+            surahList.appendChild(item);
+          });
         }
+
+        surahSearch.addEventListener('input', (e) => {
+          populateSurahList(e.target.value);
+        });
+
+        surahDropdownBtn.addEventListener('click', () => {
+          surahDropdown.classList.toggle('hidden');
+          const icon = surahDropdownBtn.querySelector('i');
+          icon.classList.toggle('fa-chevron-down');
+          icon.classList.toggle('fa-chevron-up');
+          if (!surahDropdown.classList.contains('hidden')) {
+            populateSurahList();
+            surahSearch.focus();
+          }
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+          if (!surahDropdown.contains(e.target) && e.target !== surahDropdownBtn) {
+            surahDropdown.classList.add('hidden');
+            surahDropdownBtn.querySelector('i').classList.remove('fa-chevron-up');
+            surahDropdownBtn.querySelector('i').classList.add('fa-chevron-down');
+          }
+        });
+
+        populateSurahList();
       }
 
-      // Navigation functions
-      async function navigate(direction) {
-        if (direction === 'next' && currentPage > 1) {
-          currentPage -= singlePageMode ? 1 : 2;
-        } else if (direction === 'prev' && currentPage < totalPages - 1) {
-          currentPage += singlePageMode ? 1 : 2;
-        }
-        await updatePages();
-      }
-
-      // Event handlers
-      function handleResize() {
-        const isMobile = window.innerWidth < 768;
-        if (isMobile && !singlePageMode) {
-          singlePageMode = true;
+      function navigateToSurah(surahNumber) {
+        const surah = surahData.find(s => s.number === surahNumber);
+        if (surah) {
+          currentPage = surah.page;
+          if (!singlePageMode && currentPage % 2 === 0) currentPage--;
           updatePages();
         }
-        updateButtonStyles();
       }
 
-      // Initialize
-      function init() {
-        // Set up event listeners
-        document.getElementById('page-number').addEventListener('keydown', function (e) {
-          if (e.key === 'Enter') {
-            const page = parseInt(this.value);
-            if (page > 0 && page <= totalPages) {
-              currentPage = page % 2 === 0 && !singlePageMode ? page - 1 : page;
+      // Juz Navigation
+      function initJuzSelector() {
+        const juzList = document.getElementById('juz-list');
+        const juzDropdown = document.getElementById('juz-dropdown');
+        const juzDropdownBtn = document.getElementById('juz-dropdown-btn');
+
+        juzInfo.forEach(juz => {
+          const item = document.createElement('div');
+          item.className = 'p-3 hover:bg-green-50 cursor-pointer';
+          item.innerHTML = `
+            <div class="font-medium text-green-800">Juz ${juz.number}</div>
+            <div class="text-xs text-gray-500 mt-1">
+              Pages ${juz.start}-${juz.end} • 
+              Surahs: ${juz.surahs.map(s => surahData.find(sd => sd.number === s).name).join(', ')}
+            </div>
+          `;
+          item.addEventListener('click', () => {
+            currentPage = juz.start;
+            if (!singlePageMode && currentPage % 2 === 0) currentPage--;
+            updatePages();
+            juzDropdown.classList.add('hidden');
+            juzDropdownBtn.querySelector('i').classList.remove('fa-chevron-up');
+            juzDropdownBtn.querySelector('i').classList.add('fa-chevron-down');
+          });
+          juzList.appendChild(item);
+        });
+
+        juzDropdownBtn.addEventListener('click', () => {
+          juzDropdown.classList.toggle('hidden');
+          const icon = juzDropdownBtn.querySelector('i');
+          icon.classList.toggle('fa-chevron-down');
+          icon.classList.toggle('fa-chevron-up');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+          if (!juzDropdown.contains(e.target) && e.target !== juzDropdownBtn) {
+            juzDropdown.classList.add('hidden');
+            juzDropdownBtn.querySelector('i').classList.remove('fa-chevron-up');
+            juzDropdownBtn.querySelector('i').classList.add('fa-chevron-down');
+          }
+        });
+      }
+
+      // Event Listeners
+      function initEventListeners() {
+        // Page navigation
+        document.getElementById('prev-btn').addEventListener('click', () => {
+          if (currentPage > 1) {
+            currentPage -= singlePageMode ? 1 : 2;
+            updatePages();
+          }
+        });
+
+        document.getElementById('next-btn').addEventListener('click', () => {
+          if (currentPage < (singlePageMode ? totalPages : totalPages - 1)) {
+            currentPage += singlePageMode ? 1 : 2;
+            updatePages();
+          }
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowRight') {
+            if (currentPage > 1) {
+              currentPage -= singlePageMode ? 1 : 2;
               updatePages();
-            } else {
-              this.value = singlePageMode ? `${currentPage}` : `${currentPage} - ${currentPage + 1}`;
+            }
+          } else if (e.key === 'ArrowLeft') {
+            if (currentPage < (singlePageMode ? totalPages : totalPages - 1)) {
+              currentPage += singlePageMode ? 1 : 2;
+              updatePages();
             }
           }
         });
 
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'ArrowLeft') navigate('prev');
-          else if (e.key === 'ArrowRight') navigate('next');
-        });
-
-        document.getElementById('next-icon').addEventListener('click', () => navigate('next'));
-        document.getElementById('prev-icon').addEventListener('click', () => navigate('prev'));
-        document.getElementById('fullscreen-button').addEventListener('click', toggleFullscreen);
-        document.getElementById('single-page-button').addEventListener('click', () => {
-          singlePageMode = true;
-          updatePages();
-          updateButtonStyles();
-        });
-        document.getElementById('two-page-button').addEventListener('click', () => {
-          singlePageMode = false;
-          currentPage = currentPage % 2 === 0 ? currentPage - 1 : currentPage;
-          updatePages();
-          updateButtonStyles();
-        });
-        window.addEventListener('resize', handleResize);
-
-        // Mobile controls
-        document.getElementById('mobile-next-icon').addEventListener('click', () => navigate('next'));
-        document.getElementById('mobile-prev-icon').addEventListener('click', () => navigate('prev'));
-        document.getElementById('mobile-page-number').addEventListener('keydown', (e) => {
+        // Page number input
+        pageNumberInput.addEventListener('keydown', (e) => {
           if (e.key === 'Enter') {
-            const page = parseInt(this.value);
-            if (page > 0 && page <= totalPages) {
+            const input = pageNumberInput.value;
+            let page = parseInt(input.split('-')[0]);
+            
+            if (!isNaN(page) && page > 0 && page <= totalPages) {
+              if (!singlePageMode && page % 2 === 0) page--;
               currentPage = page;
               updatePages();
             } else {
-              this.value = currentPage;
+              pageNumberInput.value = singlePageMode ? currentPage : `${currentPage}-${currentPage + 1}`;
             }
           }
         });
 
-        // Initial setup
+        // Responsive mode switching
+        window.addEventListener('resize', () => {
+          const newMode = window.innerWidth < 768;
+          if (newMode !== singlePageMode) {
+            singlePageMode = newMode;
+            if (!singlePageMode && currentPage % 2 === 0) currentPage--;
+            updatePages();
+          }
+        });
+      }
+
+      // Initialize everything
+      function init() {
+        initSurahSelector();
+        initJuzSelector();
+        initEventListeners();
         updatePages();
-        updateButtonStyles();
       }
 
       init();
     });
   </script>
-</head>
-<body class="bg-gray-100">
-  <!-- Header -->
-  <div class="bg-green-700 text-white py-4">
-    <div class="container mx-auto flex justify-between items-center px-4">
-      <a href="#" onclick="location.reload();" class="text-xl font-bold">Qur'an WebView</a>  
-      <div class="flex items-center space-x-2 md:space-x-4">
-        <span class="hidden sm:inline">
-          Page: <input class="bg-white w-20 py-2 text-black text-center rounded" id="page-number" type="text" value="1 - 2"/>
-        </span>
-        <button class="bg-green-700 text-white px-3 py-2 md:px-4 md:py-2 rounded hover:bg-green-600" id="single-page-button" title="Single Page">
-          <i class="fa-solid fa-file"></i>
-        </button>
-        <button class="bg-green-700 text-white px-3 py-2 md:px-4 md:py-2 rounded hover:bg-green-600" id="two-page-button" title="Two Pages">
-          <i class="fa-solid fa-book-open"></i>
-        </button>
-        <button class="bg-green-700 text-white px-3 py-2 md:px-4 md:py-2 rounded hover:bg-green-600" id="fullscreen-button">
-          <i class="fas fa-expand"></i>
-        </button>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Main Content -->
-  <div class="quran-container container mx-auto py-4 md:py-8 relative px-4">
-    <div class="flex justify-center flex-row-reverse">
-      <!-- Left Page -->
-      <div class="bg-white border border-gray-300 p-2 md:p-4">
-        <img alt="Quran page" 
-             class="w-full max-h-[80vh] md:max-h-[90vh] transition-opacity duration-100 ease-linear opacity-100" 
-             id="page-left" 
-             src="https://media.qurankemenag.net/khat2/QK_001.webp"/>
-      </div>
-      
-      <!-- Right Page -->
-      <div class="bg-white border border-gray-300 p-2 md:p-4 ml-2 md:ml-4" id="page-right-container">
-        <img alt="Quran page" 
-             class="w-full max-h-[80vh] md:max-h-[90vh] transition-opacity duration-100 ease-linear opacity-100" 
-             id="page-right" 
-             src="https://media.qurankemenag.net/khat2/QK_002.webp"/>
-      </div>
-    </div>
-    
-    <!-- Desktop Navigation -->
-    <div class="hidden lg:flex fixed top-1/2 -translate-y-1/2 left-10 z-10">
-      <i class="fa-solid fa-circle-chevron-left text-5xl text-gray-300 cursor-pointer hover:text-green-700" id="prev-icon"></i>
-    </div>
-    <div class="hidden lg:flex fixed top-1/2 -translate-y-1/2 right-10 z-10">
-      <i class="fa-solid fa-circle-chevron-right text-5xl text-gray-300 cursor-pointer hover:text-green-700" id="next-icon"></i>
-    </div>
-    
-    <!-- Mobile Navigation -->
-    <div class="md:hidden flex justify-center items-center mt-4 space-x-4">
-      <i class="fa-solid fa-circle-chevron-left text-4xl text-gray-600 cursor-pointer hover:text-green-700" id="mobile-prev-icon"></i>
-      <div class="flex items-center">
-        <span class="text-gray-700 mr-2">Page:</span>
-        <input class="bg-white w-16 py-2 text-black text-center rounded border border-gray-300" id="mobile-page-number" type="text" value="1"/>
-      </div>
-      <i class="fa-solid fa-circle-chevron-right text-4xl text-gray-600 cursor-pointer hover:text-green-700" id="mobile-next-icon"></i>
-    </div>
-  </div>
-  
-  <!-- Footer -->
-  <footer class="bg-gray-800 text-white py-4">
-    <div class="container mx-auto text-center px-4">
-      <p class="text-sm">This Qur'an page is sourced from <a href="https://quran.kemenag.go.id/" target="_blank" class="text-green-500 hover:underline">Qur'an Kemenag</a></p>
-    </div>
-  </footer>
 </body>
 </html>
