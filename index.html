@@ -21,6 +21,9 @@
       background-color: #22c55e;
       border-radius: 3px;
     }
+    .surah-search {
+        color: #166534; /* Green-800 color to match your theme */
+    }
     .juz-progress {
       height: 4px;
       background-color: #e5e7eb;
@@ -53,7 +56,7 @@
         
         <div class="w-full md:w-auto flex flex-col space-y-2 md:space-y-0 md:flex-row md:space-x-3">
           <!-- Surah Selector -->
-          <div class="relative flex-1 md:w-64">
+          <div class="relative flex-1 md:w-96">
             <button id="surah-dropdown-btn" class="w-full bg-white text-green-900 p-2 rounded flex justify-between items-center">
               <span id="current-surah">Select Surah</span>
               <i class="fas fa-chevron-down ml-2 transition-transform duration-200"></i>
@@ -63,7 +66,7 @@
                 <div class="relative">
                   <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                   <input type="text" id="surah-search" placeholder="Search Surah..." 
-                         class="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                         class="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-green-800">
                 </div>
               </div>
               <div class="surah-list max-h-80 overflow-y-auto">
@@ -73,7 +76,7 @@
           </div>
 
           <!-- Juz Selector -->
-          <div class="relative flex-1 md:w-40">
+          <div class="relative flex-1 md:w-30">
             <button id="juz-dropdown-btn" class="w-full bg-white text-green-900 p-2 rounded flex justify-between items-center">
               <span id="current-juz">Select Juz</span>
               <i class="fas fa-chevron-down ml-2 transition-transform duration-200"></i>
