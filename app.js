@@ -344,13 +344,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const item = document.createElement('div');
         item.className = 'p-3 hover:bg-green-50 cursor-pointer transition-colors';
         item.innerHTML = `
-          <div class="font-medium text-green-800">Juz ${juz.number}</div>
-          <div class="text-xs text-gray-500 mt-1">
-            <span class="inline-block bg-gray-100 rounded-full px-2 py-0.5 mr-1">Pages ${juz.start}-${juz.end}</span>
-            <div class="mt-1 truncate">${juz.surahs.map(s => {
+          <div class="flex items-center justify-between w-full">
+            <div class="py-0.5 font-bold text-green-700">Juz ${juz.number}</div>
+            <span class="text-xs text-gray-500 bg-gray-100 rounded-full px-2 py-0.5 whitespace-nowrap">
+              Pages ${juz.start}-${juz.end}
+            </span>
+          </div>
+          <div class="text-xs text-gray-500 mt-1 truncate">
+            ${juz.surahs.map(s => {
               const surah = surahData.find(sd => sd.number === s);
               return surah ? surah.name : '';
-            }).join(', ')}</div>
+            }).join(', ')}
           </div>
         `;
         item.addEventListener('click', () => {
