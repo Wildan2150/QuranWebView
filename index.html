@@ -7,7 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
   <style>
-    /* Enhanced transitions and animations */
+    /* transitions and animations */
     .page-transition {
       transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -46,7 +46,7 @@
       transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
-    /* Enhanced drawer styles */
+    /* drawer styles */
     #app-drawer {
       transform: translateY(-100%);
       transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -65,7 +65,7 @@
       pointer-events: auto;
     }
     
-    /* Enhanced dropdown styles */
+    /* dropdown styles */
     .dropdown-content {
       opacity: 0;
       transform: translateY(-10px);
@@ -77,7 +77,7 @@
       pointer-events: auto;
     }
     
-    /* Enhanced navigation buttons */
+    /* navigation buttons */
     .nav-button {
       transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1); /* Only transition transform */
       transform: translateY(-50%) scale(1);
@@ -105,7 +105,7 @@
   </style>
 </head>
 <body class="bg-gray-50">
-  <!-- Header Section - Enhanced -->
+  <!-- Header Section - -->
   <div class="bg-green-700 text-white sticky top-0 z-40 shadow-md">
     <div class="container mx-auto px-4">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 py-3">
@@ -120,9 +120,9 @@
           </button>
         </div>
         
-        <!-- Enhanced Header Controls -->
+        <!-- Header Controls -->
         <div id="header-controls" class="w-full md:w-auto flex flex-col space-y-2 md:space-y-0 md:flex-row md:space-x-3">
-          <!-- Enhanced Surah Selector -->
+          <!-- Surah Selector -->
           <div class="relative md:w-[16rem]">
             <button id="surah-dropdown-btn" class="w-full bg-white text-green-800 p-2.5 rounded-lg flex justify-between items-center hover:bg-gray-50 transition-colors shadow-sm border border-green-100">
               <span id="current-surah" class="truncate">Select Surah</span>
@@ -142,7 +142,7 @@
             </div>
           </div>
 
-          <!-- Enhanced Juz Selector -->
+          <!-- Juz Selector -->
           <div class="relative md:w-[14rem]">
             <button id="juz-dropdown-btn" class="w-full bg-white text-green-800 p-2.5 rounded-lg flex justify-between items-center hover:bg-gray-50 transition-colors shadow-sm border border-green-100">
               <span id="current-juz" class="truncate">Select Juz</span>
@@ -153,14 +153,14 @@
             </div>
           </div>
 
-          <!-- Enhanced Page Controls -->
+          <!-- Page Controls -->
           <div class="flex items-center space-x-0 bg-white rounded-lg p-1 shadow-sm border border-green-100">
             <span class="text-green-800 px-1.5 text-md">Page:</span>
             <input class="w-[4rem] py-0 text-green-900 text-center bg-transparent focus:outline-none" 
                    id="page-number" type="text" value="1">
           </div>
           
-          <!-- Enhanced View Mode Buttons -->
+          <!-- View Mode Buttons -->
           <div class="flex items-center space-x-1 w-22">
             <button id="single-page-button" class="bg-green-700 text-white px-4 py-2.5 rounded-lg hover:bg-green-800 transition-colors shadow-sm" title="Single Page">
               <i class="fa-solid fa-file text-sm md:text-base"></i>
@@ -177,7 +177,7 @@
     </div>
   </div>
 
-  <!-- Enhanced App Drawer with Overlay -->
+  <!-- App Drawer with Overlay -->
   <div id="drawer-overlay" class="drawer-overlay fixed inset-0 bg-black/50 z-40"></div>
   <div id="app-drawer" class="fixed top-0 left-0 w-full bg-green-700 shadow-xl z-50 rounded-b-2xl">
     <div class="p-5">
@@ -249,7 +249,7 @@
 
   <!-- Main Content -->
   <div class="container mx-auto py-4 md:py-6 px-4" id="quran-container">
-    <!-- Enhanced Juz Progress Indicator -->
+    <!-- Juz Progress Indicator -->
     <div class="mb-6 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
       <div class="flex justify-between text-sm text-gray-600 mb-2">
         <span id="current-juz-display" class="font-medium text-green-800">Juz 1</span>
@@ -261,7 +261,7 @@
     </div>
 
     <div class="flex justify-center flex-row-reverse">
-      <!-- Enhanced Left Page -->
+      <!-- Left Page -->
       <div class="bg-white shadow-md rounded-xl p-4 md:p-5 border border-gray-100">
         <img alt="Quran page" 
              class="w-full max-h-[85vh] md:max-h-[90vh] page-transition opacity-100 object-contain" 
@@ -269,7 +269,7 @@
              src="https://media.qurankemenag.net/khat2/QK_001.webp">
       </div>
       
-      <!-- Enhanced Right Page -->
+      <!-- Right Page -->
       <div class="bg-white shadow-md rounded-xl p-4 md:p-5 ml-3 md:ml-5 border border-gray-100" id="page-right-container">
         <img alt="Quran page" 
              class="w-full max-h-[85vh] md:max-h-[90vh] page-transition opacity-100 object-contain" 
@@ -278,13 +278,13 @@
       </div>
     </div>
     
-    <!-- Enhanced Navigation Controls -->
+    <!-- Navigation Controls -->
     <div class="flex justify-center mt-12 sm:mt-12 space-x-4 lg:justify-between lg:space-x-0">
       <button id="prev-btn" class="nav-button relative group bg-green-700 text-white px-6 py-3 rounded-full shadow-lg hover:bg-green-800 transition lg:fixed lg:top-1/2 lg:left-6 lg:transform lg:-translate-y-1/2 lg:bg-white lg:hover:bg-white lg:shadow-md lg:p-3 lg:text-green-700 lg:hover:text-green-800 lg:text-4xl">
         <i class="fas fa-arrow-left mr-2 lg:hidden"></i>
         <span class="lg:hidden font-medium">Previous</span>
         <i class="fa-solid fa-circle-chevron-left hidden lg:inline"></i>
-        <!-- Enhanced Tooltip -->
+        <!-- Tooltip -->
         <span class="hidden lg:group-hover:inline absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-sm font-medium px-4 py-2 rounded-lg whitespace-nowrap shadow-md transition-all duration-200 origin-left scale-0 lg:group-hover:scale-100">
           Previous Page
           <span class="absolute right-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-t-transparent border-b-4 border-b-transparent border-r-4 border-r-gray-900"></span>
@@ -295,7 +295,7 @@
         <span class="lg:hidden font-medium">Next</span>
         <i class="fas fa-arrow-right ml-2 lg:hidden"></i>
         <i class="fa-solid fa-circle-chevron-right hidden lg:inline"></i>
-        <!-- Enhanced Tooltip -->
+        <!-- Tooltip -->
         <span class="hidden lg:group-hover:inline absolute right-full mr-4 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-sm font-medium px-4 py-2 rounded-lg whitespace-nowrap shadow-md transition-all duration-200 origin-right scale-0 lg:group-hover:scale-100">
           Next Page
           <span class="absolute left-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-t-transparent border-b-4 border-b-transparent border-l-4 border-l-gray-900"></span>
@@ -304,7 +304,7 @@
     </div>
   </div>
 
-  <!-- Enhanced Footer -->
+  <!-- Footer -->
   <footer class="bg-gray-800 text-white py-5 mt-8 w-full">
     <div class="container mx-auto px-4 max-w-screen-lg text-center">
       <p class="text-sm text-gray-300">
