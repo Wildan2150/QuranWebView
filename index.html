@@ -25,6 +25,17 @@
       background-color: #16a34a;
       border-radius: 3px;
     }
+    .juz-list {
+      scrollbar-width: thin;
+      scrollbar-color: #16a34a #f0f0f0;
+    }
+    .juz-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    .juz-list::-webkit-scrollbar-thumb {
+      background-color: #16a34a;
+      border-radius: 3px;
+    }
     .juz-progress {
       height: 5px;
       background-color: #e5e7eb;
@@ -112,7 +123,7 @@
         <!-- Enhanced Header Controls -->
         <div id="header-controls" class="w-full md:w-auto flex flex-col space-y-2 md:space-y-0 md:flex-row md:space-x-3">
           <!-- Enhanced Surah Selector -->
-          <div class="relative flex-1 md:w-80">
+          <div class="relative md:w-[16rem]">
             <button id="surah-dropdown-btn" class="w-full bg-white text-green-800 p-2.5 rounded-lg flex justify-between items-center hover:bg-gray-50 transition-colors shadow-sm border border-green-100">
               <span id="current-surah" class="truncate">Select Surah</span>
               <i class="fas fa-chevron-down ml-2 transition-transform duration-200 text-green-600"></i>
@@ -132,32 +143,32 @@
           </div>
 
           <!-- Enhanced Juz Selector -->
-          <div class="relative flex-1 md:w-36">
+          <div class="relative md:w-[14rem]">
             <button id="juz-dropdown-btn" class="w-full bg-white text-green-800 p-2.5 rounded-lg flex justify-between items-center hover:bg-gray-50 transition-colors shadow-sm border border-green-100">
               <span id="current-juz" class="truncate">Select Juz</span>
               <i class="fas fa-chevron-down ml-2 transition-transform duration-200 text-green-600"></i>
             </button>
-            <div id="juz-dropdown" class="dropdown-content absolute z-20 mt-1.5 w-full bg-white rounded-lg shadow-xl border border-gray-200 max-h-80 overflow-y-auto">
+            <div id="juz-dropdown" class="juz-list dropdown-content absolute z-20 mt-1.5 w-full bg-white rounded-lg shadow-xl border border-gray-200 max-h-80 overflow-y-auto">
               <div id="juz-list" class="divide-y divide-gray-100"></div>
             </div>
           </div>
 
           <!-- Enhanced Page Controls -->
           <div class="flex items-center space-x-0 bg-white rounded-lg p-1 shadow-sm border border-green-100">
-            <span class="text-green-800 px-2 text-sm">Page:</span>
-            <input class="w-16 py-1.5 text-green-900 text-center bg-transparent focus:outline-none" 
+            <span class="text-green-800 px-1.5 text-md">Page:</span>
+            <input class="w-[4rem] py-0 text-green-900 text-center bg-transparent focus:outline-none" 
                    id="page-number" type="text" value="1">
           </div>
           
           <!-- Enhanced View Mode Buttons -->
-          <div class="flex items-center space-x-1">
-            <button id="single-page-button" class="bg-green-700 text-white p-2.5 rounded-lg hover:bg-green-800 transition-colors shadow-sm" title="Single Page">
+          <div class="flex items-center space-x-1 w-22">
+            <button id="single-page-button" class="bg-green-700 text-white px-4 py-2.5 rounded-lg hover:bg-green-800 transition-colors shadow-sm" title="Single Page">
               <i class="fa-solid fa-file text-sm md:text-base"></i>
             </button>
-            <button id="two-page-button" class="bg-green-700 text-white p-2.5 rounded-lg hover:bg-green-800 transition-colors shadow-sm" title="Two Pages">
+            <button id="two-page-button" class="bg-green-700 text-white px-4 py-2.5 rounded-lg hover:bg-green-800 transition-colors shadow-sm" title="Two Pages">
               <i class="fa-solid fa-book-open text-sm md:text-base"></i>
             </button>
-            <button id="fullscreen-button" class="bg-green-700 text-white p-2.5 rounded-lg hover:bg-green-800 transition-colors shadow-sm" title="Fullscreen">
+            <button id="fullscreen-button" class="bg-green-700 text-white px-4 py-2.5 rounded-lg hover:bg-green-800 transition-colors shadow-sm" title="Fullscreen">
               <i class="fas fa-expand text-sm md:text-base"></i>
             </button>
           </div>
@@ -213,7 +224,7 @@
 
         <!-- Drawer Page Controls -->
         <div class="flex items-center space-x-0 bg-white rounded-lg p-1.5 shadow-sm">
-          <span class="text-green-800 px-2 text-sm">Page:</span>
+          <span class="text-green-800 px-2 text-md">Page:</span>
           <input id="drawer-page-number" class="w-16 py-1.5 text-center bg-transparent focus:outline-none" type="text" value="1">
         </div>
 
@@ -221,15 +232,15 @@
         <div class="flex items-center justify-center space-x-3 pt-2">
           <button id="drawer-single-page-button" class="bg-green-700 text-white p-3 rounded-lg hover:bg-green-800 transition-colors shadow-sm flex flex-col items-center">
             <i class="fa-solid fa-file mb-1"></i>
-            <span class="text-xs">Single</span>
+            <span class="text-xs">Single Page</span>
           </button>
           <button id="drawer-two-page-button" class="bg-green-700 text-white p-3 rounded-lg hover:bg-green-800 transition-colors shadow-sm flex flex-col items-center">
             <i class="fa-solid fa-book-open mb-1"></i>
-            <span class="text-xs">Double</span>
+            <span class="text-xs">Two Page</span>
           </button>
           <button id="drawer-fullscreen-button" class="bg-green-700 text-white p-3 rounded-lg hover:bg-green-800 transition-colors shadow-sm flex flex-col items-center">
             <i class="fas fa-expand mb-1"></i>
-            <span class="text-xs">Fullscreen</span>
+            <span class="text-xs mt-2">Fullscreen</span>
           </button>
         </div>
       </div>
@@ -242,7 +253,7 @@
     <div class="mb-6 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
       <div class="flex justify-between text-sm text-gray-600 mb-2">
         <span id="current-juz-display" class="font-medium text-green-800">Juz 1</span>
-        <span id="juz-page-range" class="text-gray-500">Page 1-20</span>
+        <span id="juz-page-range" class="text-gray-500">Page 1-21</span>
       </div>
       <div class="juz-progress rounded-full">
         <div id="juz-progress-fill" class="juz-progress-fill rounded-full" style="width: 5%"></div>
