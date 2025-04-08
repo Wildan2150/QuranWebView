@@ -1,0 +1,122 @@
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #10b981 #f0f0f0;
+}
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #10b981;
+  border-radius: 3px;
+}
+/* transitions and animations */
+.page-transition {
+  transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.dropdown-transition {
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.surah-list {
+  scrollbar-width: thin;
+  scrollbar-color: #10b981 #f0f0f0;
+}
+.surah-list::-webkit-scrollbar {
+  width: 6px;
+}
+.surah-list::-webkit-scrollbar-thumb {
+  background-color: #10b981;
+  border-radius: 3px;
+}
+.juz-list {
+  scrollbar-width: thin;
+  scrollbar-color: #10b981 #f0f0f0;
+}
+.juz-list::-webkit-scrollbar {
+  width: 6px;
+}
+.juz-list::-webkit-scrollbar-thumb {
+  background-color: #10b981;
+  border-radius: 3px;
+}
+.juz-progress {
+  height: 5px;
+  background-color: #e5e7eb;
+}
+.juz-progress-fill {
+  height: 100%;
+  background-color: #10b981;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* drawer styles */
+#app-drawer {
+  transform: translateY(-100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+#app-drawer.open {
+  transform: translateY(0);
+}
+.drawer-overlay {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.drawer-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* dropdown styles */
+.dropdown-content {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+}
+.dropdown-content.open {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* navigation buttons */
+.nav-button {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1); /* Only transition transform */
+  transform: translateY(-50%) scale(1);
+  transform-origin: center; /* Proper syntax */
+}
+.nav-button:hover {
+  transform: translateY(-50%) scale(1.05);
+  /* transform-origin inherited from parent */
+}
+.nav-button:active {
+  transform: translateY(-50%) scale(0.98);
+}
+.loader {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border-top: 3px solid #10b981;
+  border-right: 3px solid transparent;
+  animation: rotation 0.5s linear infinite;
+}
+.loader-container {
+  z-index: 10;
+  transition: opacity 0.2s ease;
+}
+@keyframes rotation {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (min-width: 768px) {
+  #hamburger-btn,
+  #app-drawer {
+    display: none;
+  }
+}
+@media (max-width: 767px) {
+  #header-controls {
+    display: none;
+  }
+}
