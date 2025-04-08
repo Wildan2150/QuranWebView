@@ -18,7 +18,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const currentJuzDisplayTop = document.getElementById('current-juz-display');
     const quranContainer = document.getElementById('quran-container');
     const drawerOverlay = document.getElementById('drawer-overlay');
-
+    const pageLeftLoader = document.getElementById('page-left-loader');
+    const pageRightLoader = document.getElementById('page-right-loader');
     // Drawer elements
     const hamburgerBtn = document.getElementById('hamburger-btn');
     const closeDrawerBtn = document.getElementById('close-drawer-btn');
@@ -53,29 +54,53 @@ document.addEventListener('DOMContentLoaded', function() {
         });
       }
     }
-
     // Navigation Functions
     async function updatePages() {
       // Fade out current pages
       pageLeft.classList.add('opacity-0');
       if (!singlePageMode) pageRight.classList.add('opacity-0');
       await new Promise(r => setTimeout(r, 100));
-
-      // Update page sources
-      pageLeft.src = `https://media.qurankemenag.net/khat2/QK_${String(currentPage).padStart(3, '0')}.webp`;
+    
+      // Show loaders
+      pageLeftLoader.classList.remove('hidden');
+      if (!singlePageMode) pageRightLoader.classList.remove('hidden');
+    
+      // Update page sources and visibility FIRST
       pageNumberInput.value = singlePageMode ? currentPage : `${currentPage}-${currentPage + 1}`;
       document.getElementById('drawer-page-number').value = singlePageMode ? currentPage : `${currentPage}-${currentPage + 1}`;
-
+    
       if (singlePageMode) {
         pageRightContainer.style.display = 'none';
       } else {
         pageRightContainer.style.display = 'block';
+      }
+    
+      // Create load promises before setting src
+      const leftLoadPromise = new Promise((resolve) => {
+        pageLeft.onload = pageLeft.onerror = resolve;
+      });
+      pageLeft.src = `https://media.qurankemenag.net/khat2/QK_${String(currentPage).padStart(3, '0')}.webp`;
+    
+      let rightLoadPromise;
+      if (!singlePageMode) {
+        rightLoadPromise = new Promise((resolve) => {
+          pageRight.onload = pageRight.onerror = resolve;
+        });
         pageRight.src = `https://media.qurankemenag.net/khat2/QK_${String(currentPage + 1).padStart(3, '0')}.webp`;
       }
-
-      // Fade in new pages
+    
+      // Wait for images to load
+      const loadPromises = [leftLoadPromise];
+      if (!singlePageMode) loadPromises.push(rightLoadPromise);
+      await Promise.all(loadPromises);
+    
+      // Hide loaders and fade in images
+      pageLeftLoader.classList.add('hidden');
+      if (!singlePageMode) pageRightLoader.classList.add('hidden');
       pageLeft.classList.remove('opacity-0');
       if (!singlePageMode) pageRight.classList.remove('opacity-0');
+    
+    
 
       // Update current Surah and Juz display
       updateSurahJuzDisplay();
@@ -85,7 +110,6 @@ document.addEventListener('DOMContentLoaded', function() {
       // Close drawer if open
       closeDrawer();
     }
-
     function updateSurahJuzDisplay() {
       // Find current Surah
       const currentSurah = surahData.findLast ? 
@@ -186,27 +210,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateButtonStyles() {
       // Update view mode buttons
-      document.getElementById('single-page-button').classList.toggle('bg-green-800', singlePageMode);
-      document.getElementById('single-page-button').classList.toggle('bg-green-700', !singlePageMode);
-      document.getElementById('two-page-button').classList.toggle('bg-green-800', !singlePageMode);
-      document.getElementById('two-page-button').classList.toggle('bg-green-700', singlePageMode);
-      document.getElementById('drawer-single-page-button').classList.toggle('bg-green-800', singlePageMode);
-      document.getElementById('drawer-single-page-button').classList.toggle('bg-green-700', !singlePageMode);
-      document.getElementById('drawer-two-page-button').classList.toggle('bg-green-800', !singlePageMode);
-      document.getElementById('drawer-two-page-button').classList.toggle('bg-green-700', singlePageMode);
+      document.getElementById('single-page-button').classList.toggle('bg-emerald-700', singlePageMode);
+      document.getElementById('single-page-button').classList.toggle('bg-emerald-600', !singlePageMode);
+      document.getElementById('two-page-button').classList.toggle('bg-emerald-700', !singlePageMode);
+      document.getElementById('two-page-button').classList.toggle('bg-emerald-600', singlePageMode);
+      document.getElementById('drawer-single-page-button').classList.toggle('bg-emerald-700', singlePageMode);
+      document.getElementById('drawer-single-page-button').classList.toggle('bg-emerald-600', !singlePageMode);
+      document.getElementById('drawer-two-page-button').classList.toggle('bg-emerald-700', !singlePageMode);
+      document.getElementById('drawer-two-page-button').classList.toggle('bg-emerald-600', singlePageMode);
       
       // Update fullscreen button
       const fullscreenButton = document.getElementById('fullscreen-button');
       const drawerFullscreenButton = document.getElementById('drawer-fullscreen-button');
       
       if (fullscreenButton) {
-        fullscreenButton.classList.toggle('bg-green-800', fullscreenActive);
-        fullscreenButton.classList.toggle('bg-green-700', !fullscreenActive);
+        fullscreenButton.classList.toggle('bg-emerald-700', fullscreenActive);
+        fullscreenButton.classList.toggle('bg-emerald-600', !fullscreenActive);
       }
       
       if (drawerFullscreenButton) {
-        drawerFullscreenButton.classList.toggle('bg-green-800', fullscreenActive);
-        drawerFullscreenButton.classList.toggle('bg-green-700', !fullscreenActive);
+        drawerFullscreenButton.classList.toggle('bg-emerald-700', fullscreenActive);
+        drawerFullscreenButton.classList.toggle('bg-emerald-600', !fullscreenActive);
       }
       
       // Update fullscreen icon
@@ -258,16 +282,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
         filtered.forEach(surah => {
           const item = document.createElement('div');
-          item.className = 'p-3 hover:bg-green-50 cursor-pointer flex justify-between items-center transition-colors';
+          item.className = 'p-3 hover:bg-emerald-50 cursor-pointer flex justify-between items-center transition-colors';
           item.innerHTML = `
             <div class="flex-1 min-w-0">
-              <span class="font-medium text-green-800 truncate">${surah.number}. ${surah.name}</span>
+              <span class="font-medium text-emerald-700 truncate">${surah.number}. ${surah.name}</span>
               <div class="flex items-center mt-1 text-xs text-gray-500">
                 <span class="mr-2">Page ${surah.page}</span>
                 <span class="px-1.5 py-0.5 bg-gray-100 rounded-full text-xs">${surah.revelation}</span>
               </div>
             </div>
-            <span class="text-xs bg-green-100 text-green-800 px-2.5 py-1 rounded-full whitespace-nowrap ml-2">
+            <span class="text-xs bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full whitespace-nowrap ml-2">
               Juz ${Array.isArray(surah.juz) ? surah.juz.join(',') : surah.juz}
             </span>
           `;
@@ -342,10 +366,10 @@ document.addEventListener('DOMContentLoaded', function() {
       elements.list.innerHTML = '';
       juzInfo.forEach(juz => {
         const item = document.createElement('div');
-        item.className = 'p-3 hover:bg-green-50 cursor-pointer transition-colors';
+        item.className = 'p-3 hover:bg-emerald-50 cursor-pointer transition-colors';
         item.innerHTML = `
           <div class="flex items-center justify-between w-full">
-            <div class="py-0.5 font-bold text-green-700">Juz ${juz.number}</div>
+            <div class="py-0.5 font-bold text-emerald-600">Juz ${juz.number}</div>
             <span class="text-xs text-gray-500 bg-gray-100 rounded-full px-2 py-0.5 whitespace-nowrap">
               Pages ${juz.start}-${juz.end}
             </span>
@@ -498,25 +522,39 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       const drawerPageNumber = document.getElementById('drawer-page-number');
+      const drawerPageGo = document.getElementById('drawer-page-go');
+
+      function handlePageChange() {
+        let inputValue = drawerPageNumber.value;
+        let newPage;
+        
+        if (inputValue.includes('-')) {
+          newPage = parseInt(inputValue.split('-')[0]);
+        } else {
+          newPage = parseInt(inputValue);
+        }
+        
+        if (!isNaN(newPage)) {
+          if (newPage < 1) newPage = 1;
+          if (newPage > totalPages) newPage = totalPages;
+          if (!singlePageMode && newPage % 2 === 0) newPage--;
+          currentPage = newPage;
+          updatePages();
+        }
+      }
+
       if (drawerPageNumber) {
-        drawerPageNumber.addEventListener('change', () => {
-          let inputValue = drawerPageNumber.value;
-          let newPage;
-          
-          if (inputValue.includes('-')) {
-            newPage = parseInt(inputValue.split('-')[0]);
-          } else {
-            newPage = parseInt(inputValue);
-          }
-          
-          if (!isNaN(newPage)) {
-            if (newPage < 1) newPage = 1;
-            if (newPage > totalPages) newPage = totalPages;
-            if (!singlePageMode && newPage % 2 === 0) newPage--;
-            currentPage = newPage;
-            updatePages();
+        drawerPageNumber.addEventListener('change', handlePageChange);
+        // Also add keypress event for Enter key
+        drawerPageNumber.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            handlePageChange();
           }
         });
+      }
+
+      if (drawerPageGo) {
+        drawerPageGo.addEventListener('click', handlePageChange);
       }
 
       // View mode toggles
