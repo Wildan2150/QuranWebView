@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <title>Qur'an WebView</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
@@ -10,39 +11,44 @@
   <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
-  <link rel="icon" type="image/x-icon" href="favicon/favicon.ico">
   <link rel="manifest" href="favicon/site.webmanifest">
 </head>
+
 <body class="bg-gray-50">
   <!-- Header Section - -->
   <div class="bg-emerald-600 text-white sticky top-0 z-40 shadow-md">
     <div class="container mx-auto px-4">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 py-3">
         <div class="flex items-center justify-between w-full md:w-auto">
-          <a href="#" onclick="location.reload();" class="text-xl md:text-2xl font-bold flex items-center hover:text-emerald-50 transition-colors">
-            <img src="favicon/android-chrome-white-512x512.png" alt="Logo" class="h-8 mr-2 lg:mr-3"> 
+          <a href="#" onclick="location.reload();"
+            class="text-xl md:text-2xl font-bold flex items-center hover:text-emerald-50 transition-colors">
+            <img src="favicon/android-chrome-white-512x512.png" alt="Logo" class="h-8 mr-2 lg:mr-3">
             <span class="hidden sm:inline">Qur'an WebView</span>
             <span class="sm:hidden">Qur'an WebView</span>
           </a>
-          <button id="hamburger-btn" class="md:hidden text-white p-2 rounded-full hover:bg-emerald-500 transition-colors">
+          <button id="hamburger-btn"
+            class="md:hidden text-white p-2 rounded-full hover:bg-emerald-500 transition-colors">
             <i class="fas fa-bars text-xl"></i>
           </button>
         </div>
-        
+
         <!-- Header Controls -->
-        <div id="header-controls" class="w-full md:w-auto flex flex-col space-y-2 md:space-y-0 md:flex-row md:space-x-3">
+        <div id="header-controls"
+          class="w-full md:w-auto flex flex-col space-y-2 md:space-y-0 md:flex-row md:space-x-3">
           <!-- Surah Selector -->
           <div class="relative md:w-[16rem]">
-            <button id="surah-dropdown-btn" class="w-full bg-white text-emerald-700 p-2.5 rounded-lg flex justify-between items-center hover:bg-gray-50 transition-colors shadow-sm border border-emerald-100">
+            <button id="surah-dropdown-btn"
+              class="w-full bg-white text-emerald-700 p-2.5 rounded-lg flex justify-between items-center hover:bg-gray-50 transition-colors shadow-sm border border-emerald-100">
               <span id="current-surah" class="truncate">Select Surah</span>
               <i class="fas fa-chevron-down ml-2 transition-transform duration-200 text-emerald-500"></i>
             </button>
-            <div id="surah-dropdown" class="dropdown-content absolute z-20 mt-1.5 w-full bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden">
+            <div id="surah-dropdown"
+              class="dropdown-content absolute z-20 mt-1.5 w-full bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden">
               <div class="p-3 border-b border-gray-100">
                 <div class="relative">
                   <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                  <input type="text" id="surah-search" placeholder="Search Surah..." 
-                         class="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 text-emerald-700 placeholder-gray-600/60">
+                  <input type="text" id="surah-search" placeholder="Search Surah..."
+                    class="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 text-emerald-700 placeholder-gray-600/60">
                 </div>
               </div>
               <div class="surah-list max-h-80 overflow-y-auto">
@@ -53,11 +59,13 @@
 
           <!-- Juz Selector -->
           <div class="relative md:w-[14rem]">
-            <button id="juz-dropdown-btn" class="w-full bg-white text-emerald-700 p-2.5 rounded-lg flex justify-between items-center hover:bg-gray-50 transition-colors shadow-sm border border-emerald-100">
+            <button id="juz-dropdown-btn"
+              class="w-full bg-white text-emerald-700 p-2.5 rounded-lg flex justify-between items-center hover:bg-gray-50 transition-colors shadow-sm border border-emerald-100">
               <span id="current-juz" class="truncate">Select Juz</span>
               <i class="fas fa-chevron-down ml-2 transition-transform duration-200 text-emerald-500"></i>
             </button>
-            <div id="juz-dropdown" class="juz-list dropdown-content absolute z-20 mt-1.5 w-full bg-white rounded-lg shadow-xl border border-gray-200 max-h-80 overflow-y-auto">
+            <div id="juz-dropdown"
+              class="juz-list dropdown-content absolute z-20 mt-1.5 w-full bg-white rounded-lg shadow-xl border border-gray-200 max-h-80 overflow-y-auto">
               <div id="juz-list" class="divide-y divide-gray-100"></div>
             </div>
           </div>
@@ -65,19 +73,25 @@
           <!-- Page Controls -->
           <div class="flex items-center space-x-0 bg-white rounded-lg p-1 shadow-sm border border-emerald-100">
             <span class="text-emerald-700 px-1.5 text-md">Page:</span>
-            <input class="w-[4rem] py-0 text-emerald-800 text-center bg-transparent focus:outline-none" 
-                   id="page-number" type="text" value="1">
+            <input class="w-[4rem] py-0 text-emerald-800 text-center bg-transparent focus:outline-none mr-2" id="page-number"
+              type="text" value="1">
           </div>
-          
+
           <!-- View Mode Buttons -->
           <div class="flex items-center space-x-1 w-22">
-            <button id="single-page-button" class="bg-emerald-600 text-white px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition-colors" title="Single Page">
+            <button id="single-page-button"
+              class="bg-emerald-600 text-white px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition-colors"
+              title="Single Page">
               <i class="fa-solid fa-file text-sm md:text-base"></i>
             </button>
-            <button id="two-page-button" class="bg-emerald-600 text-white px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition-colors" title="Two Pages">
+            <button id="two-page-button"
+              class="bg-emerald-600 text-white px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition-colors"
+              title="Two Pages">
               <i class="fa-solid fa-book-open text-sm md:text-base"></i>
             </button>
-            <button id="fullscreen-button" class="bg-emerald-600 text-white px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition-colors" title="Fullscreen">
+            <button id="fullscreen-button"
+              class="bg-emerald-600 text-white px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition-colors"
+              title="Fullscreen">
               <i class="fas fa-expand text-sm md:text-base"></i>
             </button>
           </div>
@@ -102,16 +116,18 @@
       <div class="space-y-4">
         <!-- Drawer Surah Selector -->
         <div class="relative">
-          <button id="drawer-surah-dropdown-btn" class="w-full bg-white text-emerald-700 p-3 rounded-lg flex justify-between items-center hover:bg-gray-50 transition-colors shadow-sm">
+          <button id="drawer-surah-dropdown-btn"
+            class="w-full bg-white text-emerald-700 p-3 rounded-lg flex justify-between items-center hover:bg-gray-50 transition-colors shadow-sm">
             <span id="drawer-current-surah" class="truncate">Select Surah</span>
             <i class="fas fa-chevron-down ml-2 transition-transform duration-200 text-emerald-500"></i>
           </button>
-          <div id="drawer-surah-dropdown" class="dropdown-content absolute z-20 mt-2 w-full bg-white rounded-lg shadow-xl border border-gray-200">
+          <div id="drawer-surah-dropdown"
+            class="dropdown-content absolute z-20 mt-2 w-full bg-white rounded-lg shadow-xl border border-gray-200">
             <div class="p-3 border-b border-gray-100">
               <div class="relative">
                 <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                <input type="text" id="drawer-surah-search" placeholder="Search Surah..." 
-                       class="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 text-emerald-700 placeholder-gray-600/60">
+                <input type="text" id="drawer-surah-search" placeholder="Search Surah..."
+                  class="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 text-emerald-700 placeholder-gray-600/60">
               </div>
             </div>
             <div class="surah-list max-h-64 overflow-y-auto">
@@ -122,11 +138,13 @@
 
         <!-- Drawer Juz Selector -->
         <div class="relative">
-          <button id="drawer-juz-dropdown-btn" class="w-full bg-white text-emerald-700 p-3 rounded-lg flex justify-between items-center hover:bg-gray-50 transition-colors shadow-sm">
+          <button id="drawer-juz-dropdown-btn"
+            class="w-full bg-white text-emerald-700 p-3 rounded-lg flex justify-between items-center hover:bg-gray-50 transition-colors shadow-sm">
             <span id="drawer-current-juz" class="truncate">Select Juz</span>
             <i class="fas fa-chevron-down ml-2 transition-transform duration-200 text-emerald-500"></i>
           </button>
-          <div id="drawer-juz-dropdown" class="juz-list dropdown-content absolute z-20 mt-2 w-full bg-white rounded-lg shadow-xl border border-gray-200 max-h-64 overflow-y-auto">
+          <div id="drawer-juz-dropdown"
+            class="juz-list dropdown-content absolute z-20 mt-2 w-full bg-white rounded-lg shadow-xl border border-gray-200 max-h-64 overflow-y-auto">
             <div id="drawer-juz-list" class="divide-y divide-gray-100"></div>
           </div>
         </div>
@@ -134,7 +152,8 @@
         <!-- Drawer Page Controls -->
         <div class="flex justify-between items-center space-x-0 bg-white rounded-lg p-1.5 shadow-sm">
           <span class="text-emerald-700 px-2 text-md">Page:</span>
-          <input id="drawer-page-number" class="w-16 py-1.5 text-center bg-transparent focus:outline-none" type="text" value="1">
+          <input id="drawer-page-number" class="text-emerald-700 w-16 py-1.5 text-center bg-transparent focus:outline-none" type="text"
+            value="1">
           <div class="flex-grow"></div>
           <button id="drawer-page-go" class="py-1.5 px-2 text-emerald-500 hover:text-emerald-700 focus:outline-none">
             <i class="fas fa-arrow-right text-xl"></i>
@@ -143,15 +162,18 @@
 
         <!-- Drawer View Mode Buttons -->
         <div class="flex items-center justify-center space-x-3 pt-2">
-          <button id="drawer-single-page-button" class="bg-emerald-600 text-white p-3 rounded-lg hover:bg-emerald-700 transition-colors shadow-md flex flex-col items-center">
+          <button id="drawer-single-page-button"
+            class="bg-emerald-600 text-white p-3 rounded-lg hover:bg-emerald-700 transition-colors shadow-md flex flex-col items-center">
             <i class="fa-solid fa-file mb-1"></i>
             <span class="text-xs">Single Page</span>
           </button>
-          <button id="drawer-two-page-button" class="bg-emerald-600 text-white p-3 rounded-lg hover:bg-emerald-700 transition-colors shadow-md flex flex-col items-center">
+          <button id="drawer-two-page-button"
+            class="bg-emerald-600 text-white p-3 rounded-lg hover:bg-emerald-700 transition-colors shadow-md flex flex-col items-center">
             <i class="fa-solid fa-book-open mb-1"></i>
             <span class="text-xs">Two Page</span>
           </button>
-          <button id="drawer-fullscreen-button" class="bg-emerald-600 text-white p-3 rounded-lg hover:bg-emerald-700 transition-colors shadow-md flex flex-col items-center">
+          <button id="drawer-fullscreen-button"
+            class="bg-emerald-600 text-white p-3 rounded-lg hover:bg-emerald-700 transition-colors shadow-md flex flex-col items-center">
             <i class="fas fa-expand mb-1"></i>
             <span class="text-xs mt-1">Fullscreen</span>
           </button>
@@ -176,48 +198,54 @@
     <div class="flex justify-center flex-row-reverse">
       <!-- Left Page -->
       <div class="bg-white shadow-md rounded-xl p-4 md:p-5 border border-gray-100 relative">
-        <div id="page-left-loader" class="loader-container absolute inset-0 flex items-center justify-center bg-white/80 hidden">
+        <div id="page-left-loader"
+          class="loader-container absolute inset-0 flex items-center justify-center bg-white/80 hidden">
           <div class="loader"></div>
         </div>
-        <img alt="Quran page" 
-             class="w-full max-h-[85vh] md:max-h-[90vh] page-transition opacity-100 object-contain" 
-             id="page-left" 
-             src="https://media.qurankemenag.net/khat2/QK_001.webp">
+        <img alt="Quran page" class="w-full max-h-[85vh] md:max-h-[90vh] page-transition opacity-100 object-contain"
+          id="page-left" src="https://media.qurankemenag.net/khat2/QK_001.webp">
       </div>
-      
+
       <!-- Right Page -->
-      <div class="bg-white shadow-md rounded-xl p-4 md:p-5 ml-3 md:ml-5 border border-gray-100 relative" id="page-right-container">
-        <div id="page-right-loader" class="loader-container absolute inset-0 flex items-center justify-center bg-white/80 hidden">
+      <div class="bg-white shadow-md rounded-xl p-4 md:p-5 ml-3 md:ml-5 border border-gray-100 relative"
+        id="page-right-container">
+        <div id="page-right-loader"
+          class="loader-container absolute inset-0 flex items-center justify-center bg-white/80 hidden">
           <div class="loader"></div>
         </div>
-        <img alt="Quran page" 
-             class="w-full max-h-[85vh] md:max-h-[90vh] page-transition opacity-100 object-contain" 
-             id="page-right" 
-             src="https://media.qurankemenag.net/khat2/QK_002.webp">
+        <img alt="Quran page" class="w-full max-h-[85vh] md:max-h-[90vh] page-transition opacity-100 object-contain"
+          id="page-right" src="https://media.qurankemenag.net/khat2/QK_002.webp">
       </div>
-    </div> 
+    </div>
+
     <!-- Navigation Controls -->
     <div class="flex justify-center mt-12 sm:mt-12 space-x-4 lg:justify-between lg:space-x-0">
-      <button id="prev-btn" class="nav-button relative group bg-emerald-600 text-white px-6 py-3 rounded-full shadow-lg hover:bg-emerald-700 transition lg:fixed lg:top-1/2 lg:left-6 lg:transform lg:-translate-y-1/2 lg:bg-white lg:hover:bg-white lg:shadow-md lg:p-3 lg:text-emerald-600 lg:hover:text-emerald-800 lg:text-4xl">
+      <button id="next-btn"
+        class="nav-button relative group bg-emerald-600 text-white px-6 py-3 rounded-full shadow-lg hover:bg-emerald-700 transition lg:fixed lg:top-1/2 lg:left-6 lg:transform lg:-translate-y-1/2 lg:bg-white lg:hover:bg-white lg:shadow-md lg:p-3 lg:text-emerald-600 lg:hover:text-emerald-800 lg:text-4xl">
         <i class="fas fa-arrow-left mr-2 lg:hidden"></i>
-        <span class="lg:hidden font-medium">Previous</span>
+        <span class="lg:hidden font-medium">Next</span>
         <i class="fa-solid fa-circle-chevron-left hidden lg:inline"></i>
         <!-- Tooltip -->
-        <span class="hidden lg:group-hover:inline absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-sm font-medium px-4 py-2 rounded-lg whitespace-nowrap shadow-md transition-all duration-200 origin-left scale-0 lg:group-hover:scale-100">
-          Previous Page
-          <span class="absolute right-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-t-transparent border-b-4 border-b-transparent border-r-4 border-r-gray-900"></span>
+        <span 
+          class="hidden lg:group-hover:inline absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-sm font-medium px-4 py-2 rounded-lg whitespace-nowrap shadow-md transition-all duration-200 origin-left scale-0 lg:group-hover:scale-100">
+          Next Page
+          <span
+            class="absolute right-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-t-transparent border-b-4 border-b-transparent border-r-4 border-r-gray-900"></span>
         </span>
       </button>
-      
-      <button id="next-btn" class="nav-button relative group bg-emerald-600 text-white px-6 py-3 rounded-full shadow-lg hover:bg-emerald-700 transition lg:fixed lg:top-1/2 lg:right-6 lg:transform lg:-translate-y-1/2 lg:bg-white lg:hover:bg-white lg:shadow-md lg:p-3 lg:text-emerald-600 lg:hover:text-emerald-800 lg:text-4xl">
-        <span class="lg:hidden font-medium">Next</span>
+
+      <button id="prev-btn"
+        class="nav-button relative group bg-emerald-600 text-white px-6 py-3 rounded-full shadow-lg hover:bg-emerald-700 transition lg:fixed lg:top-1/2 lg:right-6 lg:transform lg:-translate-y-1/2 lg:bg-white lg:hover:bg-white lg:shadow-md lg:p-3 lg:text-emerald-600 lg:hover:text-emerald-800 lg:text-4xl">
+        <span class="lg:hidden font-medium">Previous</span>
         <i class="fas fa-arrow-right ml-2 lg:hidden"></i>
         <i class="fa-solid fa-circle-chevron-right hidden lg:inline"></i>
         <!-- Tooltip -->
-        <span class="hidden lg:group-hover:inline absolute right-full mr-4 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-sm font-medium px-4 py-2 rounded-lg whitespace-nowrap shadow-md transition-all duration-200 origin-right scale-0 lg:group-hover:scale-100">
-          Next Page
-          <span class="absolute left-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-t-transparent border-b-4 border-b-transparent border-l-4 border-l-gray-900"></span>
-        </span>    
+        <span
+          class="hidden lg:group-hover:inline absolute right-full mr-4 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-sm font-medium px-4 py-2 rounded-lg whitespace-nowrap shadow-md transition-all duration-200 origin-right scale-0 lg:group-hover:scale-100">
+          Previous Page
+          <span
+            class="absolute left-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-t-transparent border-b-4 border-b-transparent border-l-4 border-l-gray-900"></span>
+        </span>
       </button>
     </div>
   </div>
@@ -226,8 +254,9 @@
   <footer class="bg-gray-800 text-white py-5 mt-8 w-full">
     <div class="container mx-auto px-4 max-w-screen-lg text-center">
       <p class="text-sm text-gray-100">
-        <i class="fas fa-info-circle mr-1.5 text-emerald-400"></i> This Qur'an page is sourced from 
-        <a href="https://quran.kemenag.go.id/" target="_blank" class="text-emerald-400 hover:text-emerald-200 hover:underline transition-colors">Qur'an Kemenag</a>
+        <i class="fas fa-info-circle mr-1.5 text-emerald-400"></i> This Qur'an page is sourced from
+        <a href="https://quran.kemenag.go.id/" target="_blank"
+          class="text-emerald-400 hover:text-emerald-200 hover:underline transition-colors">Qur'an Kemenag</a>
       </p>
     </div>
   </footer>
@@ -235,4 +264,5 @@
   <script src="data.js"></script>
   <script src="app.js"></script>
 </body>
+
 </html>
