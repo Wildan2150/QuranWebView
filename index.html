@@ -219,32 +219,45 @@
     </div>
 
     <!-- Navigation Controls -->
-    <div class="flex justify-center mt-12 sm:mt-12 space-x-4 lg:justify-between lg:space-x-0">
-      <button id="next-btn"
-        class="nav-button relative group bg-emerald-600 text-white px-6 py-3 rounded-full shadow-lg hover:bg-emerald-700 transition lg:fixed lg:top-1/2 lg:left-6 lg:transform lg:-translate-y-1/2 lg:bg-white lg:hover:bg-white lg:shadow-md lg:p-3 lg:text-emerald-600 lg:hover:text-emerald-800 lg:text-4xl">
-        <i class="fas fa-arrow-left mr-2 lg:hidden"></i>
-        <span class="lg:hidden font-medium">Next</span>
-        <i class="fa-solid fa-circle-chevron-left hidden lg:inline"></i>
-        <!-- Tooltip -->
-        <span 
-          class="hidden lg:group-hover:inline absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-sm font-medium px-4 py-2 rounded-lg whitespace-nowrap shadow-md transition-all duration-200 origin-left scale-0 lg:group-hover:scale-100">
+    <div class="flex justify-center mt-6 sm:mt-6 space-x-4 lg:hidden">
+      <!-- Mobile Next Button -->
+      <button id="next-btn-mobile"
+        class="flex-1 max-w-[12rem] bg-emerald-600 text-white px-4 py-3 rounded-full shadow-lg hover:bg-emerald-700 transition-transform duration-100 ease-out active:scale-95 transform">
+        <div class="flex items-center justify-center">
+          <i class="fas fa-arrow-left mr-2 text-sm"></i>
+          <span class="font-medium text-md sm:text-sm">Next</span>
+        </div>
+      </button>
+    
+      <!-- Mobile Previous Button -->
+      <button id="prev-btn-mobile"
+        class="flex-1 max-w-[12rem] bg-emerald-600 text-white px-4 py-3 rounded-full shadow-lg hover:bg-emerald-700 transition-transform duration-100 ease-out active:scale-95 transform">
+        <div class="flex items-center justify-center">
+          <span class="font-medium text-md sm:text-sm">Previous</span>
+          <i class="fas fa-arrow-right ml-2 text-sm"></i>
+        </div>
+      </button>
+    </div>
+
+    <!-- Desktop Navigation Buttons -->
+    <div class="hidden lg:block">
+      <!-- Desktop Next Button -->
+      <button id="next-btn-desktop"
+        class="nav-button fixed top-1/2 left-6 transform -translate-y-1/2 bg-white shadow-md p-3 text-emerald-600 hover:text-emerald-800 text-4xl rounded-full transition group">
+        <i class="fa-solid fa-circle-chevron-left"></i>
+        <span class="hidden lg:group-hover:inline absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-sm font-medium px-4 py-2 rounded-lg whitespace-nowrap shadow-md transition-all duration-200 origin-left scale-0 lg:group-hover:scale-100">
           Next Page
-          <span
-            class="absolute right-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-t-transparent border-b-4 border-b-transparent border-r-4 border-r-gray-900"></span>
+          <span class="absolute right-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-t-transparent border-b-4 border-b-transparent border-r-4 border-r-gray-900"></span>
         </span>
       </button>
 
-      <button id="prev-btn"
-        class="nav-button relative group bg-emerald-600 text-white px-6 py-3 rounded-full shadow-lg hover:bg-emerald-700 transition lg:fixed lg:top-1/2 lg:right-6 lg:transform lg:-translate-y-1/2 lg:bg-white lg:hover:bg-white lg:shadow-md lg:p-3 lg:text-emerald-600 lg:hover:text-emerald-800 lg:text-4xl">
-        <span class="lg:hidden font-medium">Previous</span>
-        <i class="fas fa-arrow-right ml-2 lg:hidden"></i>
-        <i class="fa-solid fa-circle-chevron-right hidden lg:inline"></i>
-        <!-- Tooltip -->
-        <span
-          class="hidden lg:group-hover:inline absolute right-full mr-4 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-sm font-medium px-4 py-2 rounded-lg whitespace-nowrap shadow-md transition-all duration-200 origin-right scale-0 lg:group-hover:scale-100">
+      <!-- Desktop Previous Button -->
+      <button id="prev-btn-desktop"
+        class="nav-button fixed top-1/2 right-6 transform -translate-y-1/2 bg-white shadow-md p-3 text-emerald-600 hover:text-emerald-800 text-4xl rounded-full transition group">
+        <i class="fa-solid fa-circle-chevron-right"></i>
+        <span class="hidden lg:group-hover:inline absolute right-full mr-4 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-sm font-medium px-4 py-2 rounded-lg whitespace-nowrap shadow-md transition-all duration-200 origin-right scale-0 lg:group-hover:scale-100">
           Previous Page
-          <span
-            class="absolute left-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-t-transparent border-b-4 border-b-transparent border-l-4 border-l-gray-900"></span>
+          <span class="absolute left-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-t-transparent border-b-4 border-b-transparent border-l-4 border-l-gray-900"></span>
         </span>
       </button>
     </div>

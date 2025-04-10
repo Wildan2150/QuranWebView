@@ -1,31 +1,30 @@
 document.addEventListener("DOMContentLoaded", function () {
   // === State Management ===
-  let currentPage = 1; // Halaman saat ini yang ditampilkan
-  const totalPages = 604; // Total halaman dalam Al-Qur'an (konstan)
-  let singlePageMode = window.innerWidth < 768; // Mode tampilan satu halaman (default berdasarkan lebar layar)
-  let fullscreenActive = false; // Status mode layar penuh
-  const preloadCache = new Map(); // Cache untuk menyimpan gambar yang sudah dimuat sebelumnya
-  const MAX_CACHE_SIZE = 10; // Batas maksimum ukuran cache
-  let lastDirection = null; // Arah terakhir navigasi (next/prev) untuk optimasi preload
+  let currentPage = 1; 
+  const totalPages = 604; 
+  let singlePageMode = window.innerWidth < 768; 
+  let fullscreenActive = false;
+  const preloadCache = new Map(); 
+  const MAX_CACHE_SIZE = 10; 
+  let lastDirection = null; 
 
   // === DOM Elements ===
-  // Elemen-elemen HTML yang akan dimanipulasi
-  const pageLeft = document.getElementById("page-left"); // Gambar halaman kiri
-  const pageRight = document.getElementById("page-right"); // Gambar halaman kanan
-  const pageRightContainer = document.getElementById("page-right-container"); // Kontainer halaman kanan
-  const pageNumberInput = document.getElementById("page-number"); // Input nomor halaman
-  const currentSurahDisplay = document.getElementById("current-surah"); // Tampilan nama surah saat ini
-  const currentJuzDisplay = document.getElementById("current-juz"); // Tampilan juz saat ini
-  const juzPageRange = document.getElementById("juz-page-range"); // Rentang halaman juz
-  const juzProgressFill = document.getElementById("juz-progress-fill"); // Progress bar juz
-  const currentJuzDisplayTop = document.getElementById("current-juz-display"); // Tampilan juz di bagian atas
-  const quranContainer = document.getElementById("quran-container"); // Kontainer utama Al-Qur'an
-  const drawerOverlay = document.getElementById("drawer-overlay"); // Overlay untuk drawer
-  const pageLeftLoader = document.getElementById("page-left-loader"); // Indikator loading halaman kiri
-  const pageRightLoader = document.getElementById("page-right-loader"); // Indikator loading halaman kanan
-  const hamburgerBtn = document.getElementById("hamburger-btn"); // Tombol hamburger untuk membuka drawer
-  const closeDrawerBtn = document.getElementById("close-drawer-btn"); // Tombol tutup drawer
-  const appDrawer = document.getElementById("app-drawer"); // Drawer aplikasi
+  const pageLeft = document.getElementById("page-left"); 
+  const pageRight = document.getElementById("page-right"); 
+  const pageRightContainer = document.getElementById("page-right-container"); 
+  const pageNumberInput = document.getElementById("page-number"); 
+  const currentSurahDisplay = document.getElementById("current-surah"); 
+  const currentJuzDisplay = document.getElementById("current-juz"); 
+  const juzPageRange = document.getElementById("juz-page-range"); 
+  const juzProgressFill = document.getElementById("juz-progress-fill"); 
+  const currentJuzDisplayTop = document.getElementById("current-juz-display"); 
+  const quranContainer = document.getElementById("quran-container"); 
+  const drawerOverlay = document.getElementById("drawer-overlay"); 
+  const pageLeftLoader = document.getElementById("page-left-loader"); 
+  const pageRightLoader = document.getElementById("page-right-loader"); 
+  const hamburgerBtn = document.getElementById("hamburger-btn"); 
+  const closeDrawerBtn = document.getElementById("close-drawer-btn"); 
+  const appDrawer = document.getElementById("app-drawer"); 
 
   // === Helper Functions ===
 
@@ -463,30 +462,41 @@ document.addEventListener("DOMContentLoaded", function () {
     if (closeDrawerBtn) closeDrawerBtn.addEventListener("click", closeDrawer);
     if (drawerOverlay) drawerOverlay.addEventListener("click", closeDrawer);
 
-    const prevBtn = document.getElementById("prev-btn");
-    const nextBtn = document.getElementById("next-btn");
+    // Ambil semua versi tombol
+    const prevButtons = [
+      document.getElementById("prev-btn-mobile"),
+      document.getElementById("prev-btn-desktop")
+    ];
+    const nextButtons = [
+      document.getElementById("next-btn-mobile"),
+      document.getElementById("next-btn-desktop")
+    ];
 
-    // Tombol navigasi sebelumnya
-    if (prevBtn) {
-      prevBtn.addEventListener("click", () => {
-        if (currentPage > 1) {
-          lastDirection = "prev";
-          currentPage -= singlePageMode ? 1 : 2;
-          updatePages();
-        }
-      });
+    // Fungsi handler untuk navigasi
+    function handlePrevPage() {
+      if (currentPage > 1) {
+        lastDirection = "prev";
+        currentPage -= singlePageMode ? 1 : 2;
+        updatePages();
+      }
     }
 
-    // Tombol navigasi berikutnya
-    if (nextBtn) {
-      nextBtn.addEventListener("click", () => {
-        if (currentPage < (singlePageMode ? totalPages : totalPages - 1)) {
-          lastDirection = "next";
-          currentPage += singlePageMode ? 1 : 2;
-          updatePages();
-        }
-      });
+    function handleNextPage() {
+      if (currentPage < (singlePageMode ? totalPages : totalPages - 1)) {
+        lastDirection = "next";
+        currentPage += singlePageMode ? 1 : 2;
+        updatePages();
+      }
     }
+
+    // Tambahkan event listener ke semua tombol
+    prevButtons.forEach(btn => {
+      if (btn) btn.addEventListener("click", handlePrevPage);
+    });
+
+    nextButtons.forEach(btn => {
+      if (btn) btn.addEventListener("click", handleNextPage);
+    });
 
     // Navigasi sentuh (swipe)
     let touchStartX = 0;
@@ -517,14 +527,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Navigasi keyboard
     document.addEventListener("keydown", (e) => {
+      // Ambil referensi tombol desktop
+      const desktopPrevBtn = document.getElementById("prev-btn-desktop");
+      const desktopNextBtn = document.getElementById("next-btn-desktop");
+
       if (e.key === "ArrowLeft") {
         lastDirection = "next";
         if (currentPage < (singlePageMode ? totalPages : totalPages - 1)) {
           currentPage += singlePageMode ? 1 : 2;
           updatePages();
-          if (nextBtn && window.innerWidth >= 768) {
-            nextBtn.classList.add("lg:text-emerald-800", "scale-110", "transition-transform", "transition-colors", "duration-200", "ease-out");
-            setTimeout(() => nextBtn.classList.remove("lg:text-emerald-800", "scale-110", "transition-transform", "transition-colors", "duration-200", "ease-out"), 200);
+          
+          // Animasi untuk tombol desktop next
+          if (desktopNextBtn && window.innerWidth >= 768) {
+            desktopNextBtn.classList.add("lg:text-emerald-800", "scale-110", "transition-transform", "transition-colors", "duration-200", "ease-out");
+            setTimeout(() => {
+              desktopNextBtn.classList.remove("lg:text-emerald-800", "scale-110", "transition-transform", "transition-colors", "duration-200", "ease-out");
+            }, 200);
           }
         }
       } else if (e.key === "ArrowRight") {
@@ -532,9 +550,13 @@ document.addEventListener("DOMContentLoaded", function () {
         if (currentPage > 1) {
           currentPage -= singlePageMode ? 1 : 2;
           updatePages();
-          if (prevBtn && window.innerWidth >= 768) {
-            prevBtn.classList.add("lg:text-emerald-800", "scale-110", "transition-transform", "transition-colors", "duration-200", "ease-out");
-            setTimeout(() => prevBtn.classList.remove("lg:text-emerald-800", "scale-110", "transition-transform", "transition-colors", "duration-200", "ease-out"), 200);
+          
+          // Animasi untuk tombol desktop prev
+          if (desktopPrevBtn && window.innerWidth >= 768) {
+            desktopPrevBtn.classList.add("lg:text-emerald-800", "scale-110", "transition-transform", "transition-colors", "duration-200", "ease-out");
+            setTimeout(() => {
+              desktopPrevBtn.classList.remove("lg:text-emerald-800", "scale-110", "transition-transform", "transition-colors", "duration-200", "ease-out");
+            }, 200);
           }
         }
       }
