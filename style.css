@@ -116,3 +116,56 @@ html {
     display: none;
   }
 }
+.arabic-text {
+  font-family: 'Amiri', 'Scheherazade', sans-serif;
+  direction: rtl;
+}
+
+#page-left,
+#page-right {
+  background-color: #fff;}
+
+/* style.css */
+.custom-toggle-btn {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  border: 2px solid transparent;
+  background-color: #e5e7eb; /* bg-gray-200 */
+  color: #374151; /* text-gray-700 */
+  transition: all 0.1s ease-in-out;
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+}
+
+.custom-toggle-btn:hover {
+  background-color: #d1d5db; /* bg-gray-300 */
+  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); */
+  transform: translateY(-1px);
+}
+
+.custom-toggle-btn.active {
+  background-color: #059669; /* bg-emerald-600 */
+  color: #ffffff; /* text-white */
+  /* border-color: #047857; border-emerald-700 */
+  /* box-shadow: 0 4px 8px rgba(5, 150, 105, 0.3); */
+  transform: translateY(-1px);
+}
+
+.custom-toggle-btn.active:hover {
+  background-color: #047857; /* bg-emerald-700 */
+  /* box-shadow: 0 6px 12px rgba(5, 150, 105, 0.4); */
+}
+
+.custom-toggle-btn i {
+  font-size: 1.1rem;
+}
+
+@media (max-width: 640px) {
+  .custom-toggle-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+}

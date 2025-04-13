@@ -86,6 +86,47 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  function getQueryParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+  }
+
+  function initQueryParam() {
+    const pageNumber = getQueryParam("page");
+  if (pageNumber) {
+    const parsedPageNumber = parseInt(pageNumber);
+    if (!isNaN(parsedPageNumber) && parsedPageNumber >= 1 && parsedPageNumber <= totalPages) {
+      currentPage = parsedPageNumber;
+      if (!singlePageMode && currentPage % 2 === 0) currentPage--;
+    }
+  }
+
+  const leftSrc = `https://media.qurankemenag.net/khat2/QK_${String(currentPage).padStart(3, "0")}.webp`;
+  const rightSrc = !singlePageMode
+    ? `https://media.qurankemenag.net/khat2/QK_${String(currentPage + 1).padStart(3, "0")}.webp`
+    : null;
+
+  const leftPreload = document.createElement("link");
+  leftPreload.rel = "preload";
+  leftPreload.as = "image";
+  leftPreload.href = leftSrc;
+  document.head.appendChild(leftPreload);
+
+  if (!singlePageMode && rightSrc) {
+    const rightPreload = document.createElement("link");
+    rightPreload.rel = "preload";
+    rightPreload.as = "image";
+    rightPreload.href = rightSrc;
+    document.head.appendChild(rightPreload);
+  }
+
+  pageLeft.src = leftSrc;
+  if (!singlePageMode) {
+    pageRight.src = rightSrc;
+  } else {
+    pageRight.removeAttribute("src");
+  }
+  }
   // === Core Navigation Functions ===
 
   // Fungsi utama untuk memperbarui tampilan halaman
@@ -679,10 +720,29 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // Tutup semua dropdown jika klik di luar
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".dropdown-content") && !e.target.closest("[aria-controls]")) {
+      document.querySelectorAll(".dropdown-content").forEach((dd) => {
+        dd.classList.remove("open");
+        const btn = document.querySelector(`[aria-controls="${dd.id}"]`);
+        if (btn) {
+          const icon = btn.querySelector("i");
+          if (icon) {
+            icon.classList.remove("fa-chevron-up");
+            icon.classList.add("fa-chevron-down");
+          }
+        }
+      });
+    }
+  });
+
+  
   // === Initialization ===
 
   // Fungsi utama untuk menginisialisasi aplikasi
   function init() {
+    initQueryParam();
     initSurahSelector(); // Inisialisasi dropdown surah utama
     initSurahSelector("drawer-"); // Inisialisasi dropdown surah di drawer
     initJuzSelector(); // Inisialisasi dropdown juz utama
@@ -693,22 +753,7 @@ document.addEventListener("DOMContentLoaded", function () {
     singlePageMode = window.innerWidth < 768; // Set mode berdasarkan lebar layar
     updateButtonStyles();
 
-    // Tutup semua dropdown jika klik di luar
-    document.addEventListener("click", (e) => {
-      if (!e.target.closest(".dropdown-content") && !e.target.closest("[aria-controls]")) {
-        document.querySelectorAll(".dropdown-content").forEach((dd) => {
-          dd.classList.remove("open");
-          const btn = document.querySelector(`[aria-controls="${dd.id}"]`);
-          if (btn) {
-            const icon = btn.querySelector("i");
-            if (icon) {
-              icon.classList.remove("fa-chevron-up");
-              icon.classList.add("fa-chevron-down");
-            }
-          }
-        });
-      }
-    });
+    
   }
 
   init(); // Jalankan inisialisasi saat DOM siap
