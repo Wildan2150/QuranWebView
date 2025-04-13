@@ -1,5 +1,4 @@
 // home.js
-console.log('home.js loaded');
 
 // DOM Elements
 const searchInput = document.getElementById('search-input');
@@ -18,9 +17,7 @@ let allJuzs = [];
 
 // Main Functions
 function renderSurahs(surahs) {
-  console.log('Rendering surahs:', surahs);
   if (!surahs || !Array.isArray(surahs)) {
-    console.error('Invalid surah data');
     surahContainer.innerHTML = '<p class="text-center text-red-600 col-span-full">Failed to load surah list. Please try again.</p>';
     return;
   }
@@ -62,7 +59,6 @@ function renderSurahs(surahs) {
 
 function renderJuzs(juzs) {
   if (!juzs || !Array.isArray(juzs)) {
-    console.error('Invalid juz data');
     juzContainer.innerHTML = '<p class="text-center text-red-600 col-span-full">Failed to load juz list. Please try again.</p>';
     return;
   }
@@ -180,17 +176,12 @@ juzModeBtn.addEventListener('click', () => toggleMode('juz'));
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('DOM loaded, surahData:', surahData);
-  console.log('juzInfo:', juzInfo);
-  
   if (typeof surahData === 'undefined') {
-    console.error('surahData is not defined');
     surahContainer.innerHTML = '<p class="text-center text-red-600 col-span-full">Surah data not found.</p>';
     return;
   }
 
   if (typeof juzInfo === 'undefined') {
-    console.error('juzInfo is not defined');
     juzContainer.innerHTML = '<p class="text-center text-red-600 col-span-full">Juz data not found.</p>';
     return;
   }
