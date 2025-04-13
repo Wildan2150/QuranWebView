@@ -73,7 +73,7 @@ function renderJuzs(juzs) {
     ? '<p class="text-center text-gray-500 col-span-full">No juz found matching your search.</p>'
     : juzs.map(juz => `
       <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow cursor-pointer"
-           onclick="window.location.href='index.html?page=${juz.start}'">
+           onclick="window.location.href='read.html?page=${juz.start}'">
         <div class="flex items-center">
           <div class="bg-emerald-100 text-emerald-800 rounded-full w-10 h-10 flex items-center justify-center mr-3">
             <h4 class="font-bold">${juz.number}</h4>
