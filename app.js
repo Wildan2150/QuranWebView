@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", function () {
   let fullscreenActive = false;
   const preloadCache = new Map(); 
   const MAX_CACHE_SIZE = 10; 
-  let lastDirection = null; 
 
   // === DOM Elements ===
   const pageLeft = document.getElementById("page-left"); 
@@ -93,102 +92,87 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function initQueryParam() {
     const pageNumber = getQueryParam("page");
-  if (pageNumber) {
-    const parsedPageNumber = parseInt(pageNumber);
-    if (!isNaN(parsedPageNumber) && parsedPageNumber >= 1 && parsedPageNumber <= totalPages) {
-      currentPage = parsedPageNumber;
-      if (!singlePageMode && currentPage % 2 === 0) currentPage--;
+    if (pageNumber) {
+      const parsedPageNumber = parseInt(pageNumber);
+      if (!isNaN(parsedPageNumber) && parsedPageNumber >= 1 && parsedPageNumber <= totalPages) {
+        currentPage = parsedPageNumber;
+        if (!singlePageMode && currentPage % 2 === 0) currentPage--;
+      }
     }
-  }
-
-  const leftSrc = `https://media.qurankemenag.net/khat2/QK_${String(currentPage).padStart(3, "0")}.webp`;
-  const rightSrc = !singlePageMode
-    ? `https://media.qurankemenag.net/khat2/QK_${String(currentPage + 1).padStart(3, "0")}.webp`
-    : null;
-
-  const leftPreload = document.createElement("link");
-  leftPreload.rel = "preload";
-  leftPreload.as = "image";
-  leftPreload.href = leftSrc;
-  document.head.appendChild(leftPreload);
-
-  if (!singlePageMode && rightSrc) {
-    const rightPreload = document.createElement("link");
-    rightPreload.rel = "preload";
-    rightPreload.as = "image";
-    rightPreload.href = rightSrc;
-    document.head.appendChild(rightPreload);
-  }
-
-  pageLeft.src = leftSrc;
-  if (!singlePageMode) {
-    pageRight.src = rightSrc;
-  } else {
-    pageRight.removeAttribute("src");
-  }
   }
   // === Core Navigation Functions ===
 
   // Fungsi utama untuk memperbarui tampilan halaman
   async function updatePages() {
+    console.log(`Updating to page: ${currentPage}, singlePageMode: ${singlePageMode}`);
     // Efek transisi: sembunyikan halaman sementara
     pageLeft.classList.add("opacity-0");
     if (!singlePageMode) pageRight.classList.add("opacity-0");
-    await new Promise((r) => setTimeout(r, 100)); // Tunggu animasi selesai
+    await new Promise((r) => setTimeout(r, 150)); // Tunggu animasi selesai
 
     // Tampilkan indikator loading
     pageLeftLoader.classList.remove("hidden");
     if (!singlePageMode) pageRightLoader.classList.remove("hidden");
-
-    // Perbarui input nomor halaman
+    
     pageNumberInput.value = singlePageMode ? currentPage : `${currentPage}-${currentPage + 1}`;
     document.getElementById("drawer-page-number").value = singlePageMode
       ? currentPage
       : `${currentPage}-${currentPage + 1}`;
-
-    // Sesuaikan tampilan berdasarkan mode (satu/dua halaman)
+  
     pageRightContainer.style.display = singlePageMode ? "none" : "block";
-
-    // URL gambar halaman dari server
+  
     const leftSrc = `https://media.qurankemenag.net/khat2/QK_${String(currentPage).padStart(3, "0")}.webp`;
     const rightSrc = !singlePageMode
       ? `https://media.qurankemenag.net/khat2/QK_${String(currentPage + 1).padStart(3, "0")}.webp`
       : null;
-
-    // Gunakan cache jika ada, jika tidak muat gambar baru
-    if (preloadCache.has(currentPage)) {
-      pageLeft.src = preloadCache.get(currentPage).src;
-    } else {
+  
+    pageLeft.setAttribute("loading", "eager");
+    await loadImageWithRetry(pageLeft, leftSrc);
+  
+    // Periksa apakah src perlu diperbarui (mengurangi flicker)
+    if (pageLeft.src !== leftSrc) {
       pageLeft.setAttribute("loading", "eager");
       await loadImageWithRetry(pageLeft, leftSrc);
-      preloadCache.set(currentPage, pageLeft);
-      pruneCache();
     }
 
-    if (!singlePageMode) {
-      if (preloadCache.has(currentPage + 1)) {
-        pageRight.src = preloadCache.get(currentPage + 1).src;
-      } else {
-        pageRight.setAttribute("loading", "eager");
-        await loadImageWithRetry(pageRight, rightSrc);
-        preloadCache.set(currentPage + 1, pageRight);
-        pruneCache();
-      }
-    } else {
-      pageRight.setAttribute("loading", "lazy"); // Lazy load untuk halaman kanan jika tidak digunakan
+    if (!singlePageMode && rightSrc && pageRight.src !== rightSrc) {
+      pageRight.setAttribute("loading", "eager");
+      await loadImageWithRetry(pageRight, rightSrc);
+    } else if (singlePageMode) {
+      pageRight.removeAttribute("src");
     }
-
+  
     // Sembunyikan indikator loading dan tampilkan halaman
     pageLeftLoader.classList.add("hidden");
     if (!singlePageMode) pageRightLoader.classList.add("hidden");
     pageLeft.classList.remove("opacity-0");
     if (!singlePageMode) pageRight.classList.remove("opacity-0");
-
-    // Perbarui informasi surah, juz, dan preload halaman berikutnya
+  
     updateSurahJuzDisplay();
     preloadPages();
     updateButtonStyles();
     closeDrawer();
+
+    // Perbarui URL dengan parameter ?page=${currentPage}
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set("page", currentPage);
+    const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+    window.history.pushState({ page: currentPage }, "", newUrl);
+  }
+  
+  function preloadPages() {
+    const pagesToPreload = singlePageMode
+      ? [currentPage - 1, currentPage + 1]
+      : [currentPage - 2, currentPage - 1, currentPage + 2, currentPage + 3];
+  
+    pagesToPreload.forEach((page) => {
+      if (page > 0 && page <= totalPages && !preloadCache.has(page)) {
+        const img = new Image();
+        img.src = `https://media.qurankemenag.net/khat2/QK_${String(page).padStart(3, "0")}.webp`;
+        preloadCache.set(page, img);
+        pruneCache();
+      }
+    });
   }
 
   // Fungsi untuk memperbarui tampilan informasi surah dan juz
@@ -213,36 +197,6 @@ document.addEventListener("DOMContentLoaded", function () {
       const progress = ((currentPage - currentJuz.start) / (currentJuz.end - currentJuz.start)) * 100;
       juzProgressFill.style.width = `${Math.max(2, Math.min(100, progress))}%`; // Progress bar minimal 2%
     }
-  }
-
-  // Fungsi untuk preload gambar halaman berikutnya berdasarkan arah navigasi
-  function preloadPages() {
-    let pagesToPreload;
-    if (lastDirection === "next") {
-      pagesToPreload = singlePageMode ? [currentPage + 1] : [currentPage + 2, currentPage + 3];
-    } else if (lastDirection === "prev") {
-      pagesToPreload = singlePageMode ? [currentPage - 1] : [currentPage - 2, currentPage - 1];
-    } else {
-      pagesToPreload = singlePageMode
-        ? [currentPage - 1, currentPage + 1]
-        : [currentPage - 2, currentPage - 1, currentPage + 2, currentPage + 3];
-    }
-
-    pagesToPreload.forEach((page) => {
-      if (page > 0 && page <= totalPages && !preloadCache.has(page)) {
-        const img = new Image();
-        img.src = `https://media.qurankemenag.net/khat2/QK_${String(page).padStart(3, "0")}.webp`;
-        preloadCache.set(page, img);
-        pruneCache();
-
-        // Tambahkan elemen preload ke head untuk optimasi
-        const link = document.createElement("link");
-        link.rel = "preload";
-        link.as = "image";
-        link.href = img.src;
-        document.head.appendChild(link);
-      }
-    });
   }
 
   // === Drawer Functions ===
@@ -516,15 +470,13 @@ document.addEventListener("DOMContentLoaded", function () {
     // Fungsi handler untuk navigasi
     function handlePrevPage() {
       if (currentPage > 1) {
-        lastDirection = "prev";
         currentPage -= singlePageMode ? 1 : 2;
         updatePages();
       }
     }
-
+    
     function handleNextPage() {
       if (currentPage < (singlePageMode ? totalPages : totalPages - 1)) {
-        lastDirection = "next";
         currentPage += singlePageMode ? 1 : 2;
         updatePages();
       }
@@ -556,11 +508,9 @@ document.addEventListener("DOMContentLoaded", function () {
     function handleSwipe() {
       const threshold = 50; // Ambang batas swipe
       if (touchStartX - touchEndX > threshold && currentPage > 1) {
-        lastDirection = "prev";
         currentPage -= singlePageMode ? 1 : 2;
         updatePages();
       } else if (touchEndX - touchStartX > threshold && currentPage < (singlePageMode ? totalPages : totalPages - 1)) {
-        lastDirection = "next";
         currentPage += singlePageMode ? 1 : 2;
         updatePages();
       }
@@ -568,35 +518,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Navigasi keyboard
     document.addEventListener("keydown", (e) => {
-      // Ambil referensi tombol desktop
       const desktopPrevBtn = document.getElementById("prev-btn-desktop");
       const desktopNextBtn = document.getElementById("next-btn-desktop");
-
+    
       if (e.key === "ArrowLeft") {
-        lastDirection = "next";
         if (currentPage < (singlePageMode ? totalPages : totalPages - 1)) {
           currentPage += singlePageMode ? 1 : 2;
           updatePages();
-          
-          // Animasi untuk tombol desktop next
           if (desktopNextBtn && window.innerWidth >= 768) {
-            desktopNextBtn.classList.add("lg:text-emerald-800", "scale-110", "transition-transform", "transition-colors", "duration-200", "ease-out");
+            desktopNextBtn.classList.add("lg:text-emerald-800", "scale-110");
             setTimeout(() => {
-              desktopNextBtn.classList.remove("lg:text-emerald-800", "scale-110", "transition-transform", "transition-colors", "duration-200", "ease-out");
+              desktopNextBtn.classList.remove("lg:text-emerald-800", "scale-110");
             }, 200);
           }
         }
       } else if (e.key === "ArrowRight") {
-        lastDirection = "prev";
         if (currentPage > 1) {
           currentPage -= singlePageMode ? 1 : 2;
           updatePages();
-          
-          // Animasi untuk tombol desktop prev
           if (desktopPrevBtn && window.innerWidth >= 768) {
-            desktopPrevBtn.classList.add("lg:text-emerald-800", "scale-110", "transition-transform", "transition-colors", "duration-200", "ease-out");
+            desktopPrevBtn.classList.add("lg:text-emerald-800", "scale-110");
             setTimeout(() => {
-              desktopPrevBtn.classList.remove("lg:text-emerald-800", "scale-110", "transition-transform", "transition-colors", "duration-200", "ease-out");
+              desktopPrevBtn.classList.remove("lg:text-emerald-800", "scale-110");
             }, 200);
           }
         }
