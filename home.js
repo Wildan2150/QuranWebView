@@ -78,7 +78,7 @@ function renderJuzs(juzs) {
           <div class="bg-emerald-100 text-emerald-800 rounded-full w-10 h-10 flex items-center justify-center mr-3">
             <h4 class="font-bold">${juz.number}</h4>
           </div>
-          <div class="flex-1 px-2 mb-1 max-w-[65vw]">
+          <div class="flex-1 px-2 mb-1 max-w-[65vw] md:max-w-[200px]">
             <div class="flex justify-between items-center">
               <h4 class="font-bold text-lg text-emerald-700">Juz ${juz.number}</h4>
             </div>
