@@ -32,29 +32,39 @@ function renderSurahs(surahs) {
 
   surahContainer.innerHTML = '';
 
-  surahs.forEach(surah => {
-    const surahElement = document.createElement('div');
-    surahElement.className = 'bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow cursor-pointer';
-    surahElement.onclick = () => window.location.href = `read.html?page=${surah.page}`;
+  surahs.forEach((surah) => {
+    const surahElement = document.createElement("div");
+    surahElement.className =
+      "bg-white rounded-lg shadow-md p-4 sm:p-3 md:p-3 lg:p-5 hover:shadow-lg transition-shadow cursor-pointer";
+    surahElement.onclick = () =>
+      (window.location.href = `read.html?page=${surah.page}`);
     surahElement.innerHTML = `
-      <div class="flex items-center justify-between">
-        <div class="flex items-center flex-1">
-          <div class="bg-emerald-100 text-emerald-800 rounded-full w-10 h-10 flex items-center justify-center mr-3">
-            <h4 class="font-bold">${surah.number || 'N/A'}</h4>
+      <div class="flex items-center justify-between gap-3 sm:gap-2 md:gap-2 lg:gap-4">
+        <div class="flex items-center flex-1 min-w-0">
+          <div class="bg-emerald-100 text-emerald-800 rounded-full w-10 h-10 sm:w-8 sm:h-8 md:w-8 md:h-8 lg:w-10 lg:h-10 flex items-center justify-center flex-shrink-0 mr-2">
+            <h4 class="font-bold">${surah.number || "N/A"}</h4>
           </div>
-          <div class="flex-1 px-2">
-            <h4 class="font-bold text-lg text-emerald-700">${surah.name || 'Unknown'}</h4>
-            <div class="flex flex-wrap items-center text-sm text-gray-500 mt-1 gap-1">
-              <span>${surah.revelation || 'N/A'}</span>
-              <span>•</span>
-              <span>Juz: ${Array.isArray(surah.juz) ? surah.juz.join(', ') : (surah.juz || 'N/A')}</span>
-              <span>•</span>
-              <span>Page: ${surah.page || 'N/A'}</span>
+          <div class="flex-1 px-2 sm:px-1 md:px-1 lg:px-3 min-w-0">
+            <h4 class="font-bold text-lg text-emerald-700">${
+              surah.name || "Unknown"
+            }</h4>
+            <div class="flex flex-wrap items-center text-sm text-gray-500 mt-1 gap-1 sm:gap-0.5 md:gap-0.5 lg:gap-1">
+              <span>${surah.revelation || "N/A"}</span>
+              <span> • </span>
+              <span>${surah.verses || "N/A"} Ayahs</span>
+              <span> • </span>
+              <span>Juz: ${
+                Array.isArray(surah.juz)
+                  ? surah.juz.join(", ")
+                  : surah.juz || "N/A"
+              }</span>
             </div>
           </div>
         </div>
-        <div class="flex justify-end items-center m-1">
-          <h4 class="arabic-text text-2xl text-gray-800">${surah.arabic || 'غير متوفر'}</h4>
+        <div class="flex justify-end items-center flex-shrink-0 min-w-0 sm:min-w-[20px] md:min-w-[20px] lg:min-w-0">
+          <h4 class="arabic-text text-2xl text-gray-800">${
+            surah.arabic || "غير متوفر"
+          }</h4>
         </div>
       </div>
     `;
@@ -70,32 +80,38 @@ function renderJuzs(juzs) {
   }
 
   juzContainer.innerHTML = juzs.length === 0
-    ? '<p class="text-center text-gray-500 col-span-full">No juz found matching your search.</p>'
-    : juzs.map(juz => `
-      <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow cursor-pointer"
+  ? '<p class="text-center text-gray-500 col-span-full py-6">No juz found matching your search.</p>'
+  : juzs
+      .map(
+        (juz) => `
+      <div class="bg-white rounded-lg shadow-md p-4 sm:p-3 md:p-4 lg:p-5 hover:shadow-lg transition-shadow cursor-pointer"
            onclick="window.location.href='read.html?page=${juz.start}'">
-        <div class="flex items-center">
-          <div class="bg-emerald-100 text-emerald-800 rounded-full w-10 h-10 flex items-center justify-center mr-3">
-            <h4 class="font-bold">${juz.number}</h4>
+        <div class="flex items-center gap-3 sm:gap-2 md:gap-3 lg:gap-4">
+          <div class="bg-emerald-100 text-emerald-800 rounded-full w-10 h-10 sm:w-8 sm:h-8 md:w-10 md:h-10 flex items-center justify-center flex-shrink-0 mr-1">
+            <h4 class="font-bold text-base sm:text-sm md:text-base">${juz.number}</h4>
           </div>
-          <div class="flex-1 px-2 mb-1 max-w-[65vw] md:max-w-[200px]">
+          <div class="flex-1 min-w-0">
             <div class="flex justify-between items-center">
-              <h4 class="font-bold text-lg text-emerald-700">Juz ${juz.number}</h4>
+              <h4 class="font-bold text-lg sm:text-base md:text-lg lg:text-xl text-emerald-700 truncate">Juz ${juz.number}</h4>
             </div>
-            <div class="flex items-center text-sm text-gray-500 mt-1">
-              <span>Pages ${juz.start} to ${juz.end}</span>
-            </div>
-            <div class="text-sm text-gray-500 mt-1 truncate">${juz.surahs
-              .map((s) => {
-                const surah = surahData.find((sd) => sd.number === s);
-                return surah ? surah.name : "";
-              })
-              .join(", ")}
+            <div class="flex items-center text-sm sm:text-xs md:text-sm text-gray-500 mt-1 gap-1 sm:gap-0.5 md:gap-1 whitespace-nowrap">
+              <span>Page ${juz.start}-${juz.end}</span>
+              <span> • </span>
+              <span class="truncate">${
+                juz.surahs
+                  .map((s) => {
+                    const surah = surahData.find((sd) => sd.number === s);
+                    return surah ? surah.name : "";
+                  })
+                  .join(", ")
+              }</span>
             </div>
           </div>
         </div>
       </div>
-    `).join('');
+    `
+      )
+      .join("");
 }
 
 function filterSurahs(searchTerm) {
@@ -123,12 +139,28 @@ function filterJuzs(searchTerm) {
     return;
   }
 
-  const term = searchTerm.toLowerCase();
-  const filtered = allJuzs.filter(juz => {
-    return (
-      (juz.number && juz.number.toString().includes(term))      
-    );
+  const term = searchTerm.toLowerCase().trim();
+  const filtered = allJuzs.filter((juz) => {
+    // Match by juz number
+    if (juz.number && juz.number.toString().includes(term)) {
+      return true;
+    }
+
+    // Match by surah name or Arabic name
+    if (Array.isArray(juz.surahs)) {
+      return juz.surahs.some((surahNumber) => {
+        const surah = allSurahs.find((sd) => sd.number === surahNumber);
+        return (
+          surah &&
+          ((surah.name && surah.name.toLowerCase().includes(term)) ||
+            (surah.arabic && surah.arabic.includes(term)))
+        );
+      });
+    }
+
+    return false;
   });
+  
 
   renderJuzs(filtered);
 }
