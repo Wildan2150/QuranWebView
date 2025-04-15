@@ -25,6 +25,11 @@ document.addEventListener("DOMContentLoaded", function () {
   const closeDrawerBtn = document.getElementById("close-drawer-btn"); 
   const appDrawer = document.getElementById("app-drawer"); 
 
+  // Expose state for bookmark.js
+  function getPageState() {
+    return { currentPage, singlePageMode };
+  }
+  window.getPageState = getPageState;
   // === Helper Functions ===
 
   // Fungsi untuk memuat gambar dengan mekanisme retry jika gagal
@@ -158,6 +163,11 @@ document.addEventListener("DOMContentLoaded", function () {
     urlParams.set("page", currentPage);
     const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
     window.history.pushState({ page: currentPage }, "", newUrl);
+
+    // Refresh bookmark icons
+    if (typeof window.updateBookmark === 'function') {
+      window.updateBookmark();
+    }
   }
   
   function preloadPages() {
@@ -680,6 +690,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  
   
   // === Initialization ===
 

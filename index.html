@@ -1,68 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Qur'an WebView</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
-    <link rel="manifest" href="favicon/site.webmanifest">
-    <link rel="prefetch" href="read.html" as="document">
-    <link rel="prefetch" href="app.js" as="script">
-    <link rel="prefetch" href="data.js" as="script">
-    <link rel="preload" href="https://media.qurankemenag.net/khat2/QK_001.webp" as="image">
-    <link rel="preload" href="https://media.qurankemenag.net/khat2/QK_002.webp" as="image">
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Qur'an WebView</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+  <link rel="manifest" href="favicon/site.webmanifest">
+  <link rel="prefetch" href="read.html" as="document">
+  <link rel="prefetch" href="app.js" as="script">
+  <link rel="prefetch" href="data.js" as="script">
+  <link rel="preload" href="https://media.qurankemenag.net/khat2/QK_001.webp" as="image">
+  <link rel="preload" href="https://media.qurankemenag.net/khat2/QK_002.webp" as="image">
 </head>
+
 <body class="bg-gray-50">
   <!-- Header -->
-  <div class="bg-emerald-600 text-white sticky top-0 z-40 shadow-md">
+  <div class="bg-emerald-600 content-center text-white sticky z-40 top-0 shadow-md min-h-[70px] lg:min-h-[70px]">
     <div class="container mx-auto px-4">
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 py-4">
-        <div class="flex items-center justify-between w-full md:w-auto">
-          <a href="index.html"
-            class="text-xl md:text-2xl font-bold flex items-center hover:text-emerald-50 transition-colors">
-            <img src="favicon/android-chrome-white-512x512.png" alt="Logo" class="h-8 mr-2 lg:mr-3">
-            <span class="hidden sm:inline">Qur'an WebView</span>
-            <span class="sm:hidden">Qur'an WebView</span>
-          </a>
-        </div>
+      <div class="flex justify-between items-center py-4">
+        <a href="index.html"
+          class="text-xl md:text-2xl font-bold flex items-center hover:text-emerald-50 transition-colors">
+          <img src="favicon/android-chrome-white-512x512.png" alt="Logo" class="h-8 mr-2 lg:mr-3">
+          <span>Qur'an WebView</span>
+        </a>
       </div>
     </div>
   </div>
 
   <!-- Search and Toggle Section -->
   <div class="container mx-auto px-4 py-4">
-    <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+    <div class="bg-white rounded-lg shadow-sm p-4 mb-0">
       <!-- Search Bar -->
       <div class="relative mb-4">
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <i class="fas fa-search text-gray-400"></i>
         </div>
-        <input 
-          type="text" 
-          id="search-input" 
-          class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:ring-emerald-500 focus:border-emerald-500" 
-          placeholder="What would you like to read today?"
-          autocomplete="off"
-        >
+        <input type="text" id="search-input"
+          class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:ring-emerald-500 focus:border-emerald-500"
+          placeholder="Search Surah, Juz, or Page" autocomplete="off">
         <button id="clear-search" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden">
           <i class="fas fa-times text-gray-400 hover:text-gray-600"></i>
         </button>
       </div>
-      
+
       <!-- Toggle Buttons -->
-      <div class="flex justify-center space-x-3">
-        <button id="surah-mode-btn" class="custom-toggle-btn active">
-          <i class="fas fa-book-open mr-2"></i>Surah List
-        </button>
-        <button id="juz-mode-btn" class="custom-toggle-btn">
-          <i class="fas fa-bookmark mr-2"></i>Juz List
-        </button>
+      <div class="flex justify-center space-x-3 max-md:flex-col max-md:items-center max-md:gap-3">
+        <!-- Surah and Juz Buttons Container -->
+        <div class="flex justify-center space-x-3  max-md:max-w-[600px]">
+          <button id="surah-mode-btn" class="custom-toggle-btn active  max-md:max-w-[300px] max-md:py-2">
+            <i class="fas fa-book-open mr-2"></i>Surah List
+          </button>
+          <button id="juz-mode-btn" class="custom-toggle-btn  max-md:max-w-[300px] max-md:py-2">
+            <i class="fas fa-bookmark mr-2"></i>Juz List
+          </button>
+        </div>
+        <!-- Go to Last Reading Button with Tooltip -->
+        <div class="relative group max-md:max-w-[600px]">
+          <button id="last-reading-btn" class="custom-toggle-btn max-md:w-full max-md:py-2" disabled>
+            <i class="fas fa-history mr-2"></i>Go to Last Reading
+          </button>
+          <span id="last-reading-tooltip"
+            class="hidden group-hover:block absolute top-[-2.5rem] left-1/2 -translate-x-1/2 bg-gray-900 text-white text-sm font-medium px-4 py-2 rounded-lg whitespace-nowrap shadow-md transition-all duration-200 origin-center scale-0 group-hover:scale-100 z-40">
+            No recent reading
+          </span>
+        </div>
       </div>
     </div>
   </div>
@@ -71,7 +79,7 @@
   <div class="container mx-auto px-4 min-h-[80vh]">
     <!-- Surah List Section -->
     <div id="surah-section">
-      <h1 class="text-2xl md:text-3xl font-bold text-emerald-700 mb-6">Surah List</h1>
+      <!--<h1 class="text-2xl md:text-3xl font-bold text-emerald-700 mb-6">Surah List</h1>-->
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3 lg:gap-6" id="surah-container">
         <p class="text-center text-gray-500 col-span-full">Loading surah list...</p>
       </div>
@@ -79,7 +87,7 @@
 
     <!-- Juz List Section (Hidden by default) -->
     <div id="juz-section" class="hidden">
-      <h1 class="text-2xl md:text-3xl font-bold text-emerald-700 mb-6">Juz List</h1>
+      <!-- <h1 class="text-2xl md:text-3xl font-bold text-emerald-700 mb-6">Juz List</h1> -->
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-6" id="juz-container">
         <p class="text-center text-gray-500 col-span-full">Loading juz list...</p>
       </div>
@@ -91,7 +99,8 @@
     <div class="container mx-auto px-4 max-w-screen-lg text-center">
       <p class="text-sm text-gray-100">
         <i class="fas fa-info-circle mr-1.5 text-emerald-400"></i> This Qur'an page is sourced from
-        <a href="https://quran.kemenag.go.id/" target="_blank" class="text-emerald-400 hover:text-emerald-200 hover:underline transition-colors">Qur'an Kemenag</a>
+        <a href="https://quran.kemenag.go.id/" target="_blank"
+          class="text-emerald-400 hover:text-emerald-200 hover:underline transition-colors">Qur'an Kemenag</a>
       </p>
     </div>
   </footer>
@@ -99,4 +108,5 @@
   <script src="data.js"></script>
   <script src="home.js"></script>
 </body>
+
 </html>
