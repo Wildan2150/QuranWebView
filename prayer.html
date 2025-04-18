@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jadwal Sholat - Qur'an WebView</title>
+  <script src="https://cdn.tailwindcss.com/3.4.14"></script>
+  <script src="https://kit.fontawesome.com/0a9f84347c.js" crossorigin="anonymous"></script>
+</head>
+<body class="bg-gray-100">
+  <!-- Header -->
+  <div class="bg-emerald-600 text-white sticky top-0 z-40 shadow-lg min-h-[60px]">
+    <div class="container mx-auto px-4">
+      <div class="flex justify-between items-center py-5">
+        <a href="index.html" class="flex items-center hover:text-emerald-50 transition-colors duration-200">
+          <i class="fas fa-arrow-left mr-2 text-lg"></i>
+          <span class="text-xl font-bold">Jadwal Sholat</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Konten Utama -->
+  <div class="container mx-auto px-4 py-6">
+    <div class="bg-white rounded-xl shadow-xl p-6 mb-6  border-emerald-100">
+        <!-- Jadwal Harian -->
+        <div class="text-xl font-bold text-gray-800 mb-3">Jadwal Sholat Hari Ini</div>
+        <div class="flex items-center gap-1 mb-1">
+            <p class="text-sm text-emerald-600 font-bold">Tanggal:
+            <span id="date" class="font-semibold text-emerald-600">Memuat...</span>
+            </p>
+            <p class="font-semibold text-emerald-600">/</p>
+            <p class="text-sm text-gray-600 font-medium">
+            <span id="hijri-date" class="font-semibold text-emerald-600">Memuat...</span>
+            </p>
+        </div>
+        <!-- Lokasi -->
+        <div class="flex items-center justify-between mb-4">
+            <p class="text-sm text-emerald-600 font-bold flex items-center">Lokasi:
+                <span id="current-location" class="font-semibold text-emerald-600 ml-1">Memuat...</span>
+            </p>
+            <button onclick="utils.toggleLocationInput()" class="text-emerald-500 hover:text-emerald-700 flex items-center text-sm font-semibold transition-colors duration-200 group">
+            <i class="fas fa-map-marker-alt mr-1 group-hover:scale-110 transition-transform duration-200"></i>Ubah Lokasi
+            </button>
+        </div>
+        <div id="location-input" class="hidden mb-2">
+            <div class="flex space-x-2">
+            <input
+                id="city-input"
+                type="text"
+                placeholder="Masukkan nama kota"
+                class="w-full p-3 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-300 bg-white shadow-sm transition-all duration-200"
+            />
+            <button
+                onclick="utils.updatePrayerLocation()"
+                class="bg-emerald-500 text-white px-5 py-2 rounded-xl text-sm font-semibold hover:bg-emerald-600 transition-all duration-200 hover:shadow-md"
+            >
+                Ubah
+            </button>
+            </div>
+        </div>
+        <hr class="h-px my-4 bg-gray-200 border-0 dark:bg-gray-200">
+      <div id="daily-prayer-times" class=" grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-4 md:gap-4 lg:grid-cols-7 lg:gap-4"></div>
+    </div>
+
+    <!-- Jadwal Bulanan -->
+    <div class="bg-white rounded-xl shadow-xl p-6">
+      <h3 class="text-lg font-semibold text-gray-800 mb-4">Jadwal Sholat Bulanan</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="bg-emerald-600 text-white">
+              <th class="p-3 text-left rounded-tl-lg">Tanggal</th>
+              <th class="p-3 text-left">Subuh</th>
+              <th class="p-3 text-left">Dzuhur</th>
+              <th class="p-3 text-left">Ashar</th>
+              <th class="p-3 text-left">Maghrib</th>
+              <th class="p-3 text-left rounded-tr-lg">Isya</th>
+            </tr>
+          </thead>
+          <tbody id="monthly-prayer-times" class="divide-y divide-gray-200"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    console.log('Prayer page loaded');
+    console.log('Font Awesome loaded');
+
+    const elements = {
+      currentLocation: document.getElementById('current-location'),
+      locationInput: document.getElementById('location-input'),
+      cityInput: document.getElementById('city-input'),
+      dateDisplay: document.getElementById('date'),
+      hijriDateDisplay: document.getElementById('hijri-date'),
+      dailyPrayerTimes: document.getElementById('daily-prayer-times'),
+      monthlyPrayerTimes: document.getElementById('monthly-prayer-times')
+    };
+
+    const state = {
+      prayer: {
+        currentCity: 'Jakarta',
+        currentCountry: 'Indonesia',
+        dailyTimings: null,
+        monthlyTimings: null
+      }
+    };
+
+    const utils = {
+      showElement: (el) => {
+        if (el) el.classList.remove('hidden');
+      },
+      hideElement: (el) => {
+        if (el) el.classList.add('hidden');
+      },
+      renderError: (container, message) => {
+        if (container) container.innerHTML = `<p class="text-center text-red-600">${message}</p>`;
+      },
+      toggleLocationInput: () => {
+        const { locationInput } = elements;
+        if (locationInput) locationInput.classList.toggle('hidden');
+      },
+      detectPrayerLocation: async () => {
+        const { currentLocation } = elements;
+        if (!currentLocation) return;
+        try {
+          const response = await fetch('http://ip-api.com/json');
+          if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+          const data = await response.json();
+          state.prayer.currentCity = data.status === 'success' ? data.city || 'Jakarta' : 'Jakarta';
+          state.prayer.currentCountry = data.status === 'success' ? data.country || 'Indonesia' : 'Indonesia';
+          render.prayerLocation();
+          render.dailyPrayerSchedule();
+          render.monthlyPrayerSchedule();
+        } catch (error) {
+          state.prayer.currentCity = 'Jakarta';
+          state.prayer.currentCountry = 'Indonesia';
+          render.prayerLocation();
+          render.dailyPrayerSchedule();
+          render.monthlyPrayerSchedule();
+        }
+      },
+      updatePrayerLocation: () => {
+        const { cityInput } = elements;
+        if (!cityInput) return;
+        const city = cityInput.value.trim();
+        if (city) {
+          state.prayer.currentCity = city;
+          state.prayer.currentCountry = 'Indonesia';
+          render.prayerLocation();
+          render.dailyPrayerSchedule();
+          render.monthlyPrayerSchedule();
+          utils.toggleLocationInput();
+        } else {
+          alert('Masukkan nama kota!');
+        }
+      },
+      getNextPrayer: (timings) => {
+        if (!timings) return 'Subuh';
+        const now = new Date();
+        const currentTime = now.getHours() * 60 + now.getMinutes();
+        const prayerTimes = [
+          { name: 'Subuh', time: timings.Fajr },
+          { name: 'Dzuhur', time: timings.Dhuhr },
+          { name: 'Ashar', time: timings.Asr },
+          { name: 'Maghrib', time: timings.Maghrib },
+          { name: 'Isya', time: timings.Isha }
+        ];
+        for (let prayer of prayerTimes) {
+          if (!prayer.time) continue;
+          const [hours, minutes] = prayer.time.split(':').map(Number);
+          const prayerTime = hours * 60 + minutes;
+          if (prayerTime > currentTime) {
+            return prayer.name;
+          }
+        }
+        return 'Subuh';
+      }
+    };
+
+    const render = {
+      prayerLocation: () => {
+        const { currentLocation } = elements;
+        if (currentLocation) {
+          currentLocation.textContent = `${state.prayer.currentCity}, ${state.prayer.currentCountry}`;
+        }
+      },
+      dailyPrayerSchedule: async () => {
+        const { dailyPrayerTimes, dateDisplay, hijriDateDisplay } = elements;
+        if (!dailyPrayerTimes) return;
+        try {
+          const url = `https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(state.prayer.currentCity)}&country=${encodeURIComponent(state.prayer.currentCountry)}&method=20`;
+          const response = await fetch(url);
+          if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+          const data = await response.json();
+          if (data.code === 200) {
+            state.prayer.dailyTimings = data.data.timings;
+            const gregorianDate = new Date(data.data.date.gregorian.date.split('-').reverse().join('-')).toLocaleDateString('id-ID', {
+              day: 'numeric', month: 'long', year: 'numeric'
+            });
+            if (dateDisplay) dateDisplay.textContent = gregorianDate;
+            const hijriDate = data.data.date.hijri;
+            const formattedHijri = hijriDate ? `${hijriDate.day} ${hijriDate.month.en} ${hijriDate.year}` : 'N/A';
+            if (hijriDateDisplay) hijriDateDisplay.textContent = formattedHijri;
+
+            const nextPrayer = utils.getNextPrayer(state.prayer.dailyTimings);
+            const prayerTimes = [
+              { name: 'Imsak', time: state.prayer.dailyTimings.Imsak },
+              { name: 'Subuh', time: state.prayer.dailyTimings.Fajr },
+              { name: 'Terbit', time: state.prayer.dailyTimings.Sunrise },
+              { name: 'Dzuhur', time: state.prayer.dailyTimings.Dhuhr },
+              { name: 'Ashar', time: state.prayer.dailyTimings.Asr },
+              { name: 'Maghrib', time: state.prayer.dailyTimings.Maghrib },
+              { name: 'Isya', time: state.prayer.dailyTimings.Isha }
+            ];
+
+            dailyPrayerTimes.innerHTML = prayerTimes.map(prayer => {
+              const isNext = prayer.name === nextPrayer;
+              return `
+                <div class="bg-white rounded-lg shadow-lg p-5 sm:p-6 md:p-5 lg:p-6 hover:shadow-xl transition-all duration-300  ${isNext ? 'border-l-4 border-emerald-600 bg-emerald-50' : 'border-l-4 border-gray-200'}">
+                  <div class="flex justify-between items-center">
+                    <span class="text-base sm:text-sm md:text-base lg:text-base ${isNext ? 'font-bold text-emerald-700':' font-semibold text-gray-600'}">${prayer.name}</span>
+                    <span class="text-base sm:text-sm md:text-base lg:text-base ${isNext ? 'font-bold text-emerald-700' : 'text-gray-600'}">${prayer.time || 'N/A'}</span>
+                  </div>
+                </div>
+              `;
+            }).join('');
+          } else {
+            utils.renderError(dailyPrayerTimes, 'Gagal mengambil jadwal sholat harian.');
+          }
+        } catch (error) {
+          utils.renderError(dailyPrayerTimes, 'Terjadi kesalahan saat mengambil data.');
+          if (hijriDateDisplay) hijriDateDisplay.textContent = 'N/A';
+        }
+      },
+      monthlyPrayerSchedule: async () => {
+        const { monthlyPrayerTimes } = elements;
+        if (!monthlyPrayerTimes) return;
+        try {
+          const date = new Date();
+          const month = date.getMonth() + 1;
+          const year = date.getFullYear();
+          const url = `https://api.aladhan.com/v1/calendarByCity?city=${encodeURIComponent(state.prayer.currentCity)}&country=${encodeURIComponent(state.prayer.currentCountry)}&method=20&month=${month}&year=${year}`;
+          const response = await fetch(url);
+          if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+          const data = await response.json();
+          if (data.code === 200) {
+            state.prayer.monthlyTimings = data.data;
+            monthlyPrayerTimes.innerHTML = data.data.map(day => {
+              const timings = day.timings;
+              const date = new Date(day.date.gregorian.date.split('-').reverse().join('-')).toLocaleDateString('id-ID', {
+                day: 'numeric', month: 'long', year: 'numeric'
+              });
+              return `
+                <tr class="hover:bg-emerald-50 transition-colors duration-200">
+                  <td class="p-3">${date}</td>
+                  <td class="p-3">${timings.Fajr || 'N/A'}</td>
+                  <td class="p-3">${timings.Dhuhr || 'N/A'}</td>
+                  <td class="p-3">${timings.Asr || 'N/A'}</td>
+                  <td class="p-3">${timings.Maghrib || 'N/A'}</td>
+                  <td class="p-3">${timings.Isha || 'N/A'}</td>
+                </tr>
+              `;
+            }).join('');
+          } else {
+            utils.renderError(monthlyPrayerTimes, 'Gagal mengambil jadwal sholat bulanan.');
+          }
+        } catch (error) {
+          utils.renderError(monthlyPrayerTimes, 'Terjadi kesalahan saat mengambil data.');
+        }
+      }
+    };
+
+    const init = () => {
+      utils.detectPrayerLocation();
+    };
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
