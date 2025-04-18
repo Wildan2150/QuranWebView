@@ -169,3 +169,10 @@ html {
     font-size: 0.875rem;
   }
 }
+
+#location-input {
+  position: relative;
+}
+#city-dropdown {
+  z-index: 10;
+}
