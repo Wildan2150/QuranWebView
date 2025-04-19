@@ -134,9 +134,11 @@ const apiUtils = {
             const response = await fetch(url, {
                 ...options,
                 headers: {
-                    'User-Agent': 'QuranWebView/1.0',
-                    ...options.headers
-                }
+                    'Accept': 'application/json', // Explicitly request JSON
+                    ...options.headers, // Allow custom headers
+                },
+                credentials: 'omit', // Avoid sending cookies
+                mode: 'cors', // Ensure CORS mode
             });
             
             if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
