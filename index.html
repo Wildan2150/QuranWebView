@@ -24,14 +24,14 @@
   <!-- Header -->
   <div class="bg-emerald-600 content-center text-white sticky z-40 top-0 shadow-md min-h-[70px] lg:min-h-[70px]">
     <div class="container mx-auto px-4">
-      <div class="flex justify-between items-center py-4">
+      <div class="flex justify-between items-center py-2">
         <a href="index.html"
           class="text-xl md:text-2xl font-bold flex items-center hover:text-emerald-50 transition-colors">
           <img src="favicon/android-chrome-white-512x512.png" alt="Logo" class="h-8 mr-2 lg:mr-3">
           <span>Qur'an WebView</span>
         </a>
         <!-- Tombol Prayer Times -->
-        <a href="prayer.html" class="custom-toggle-btn bg-white text-emerald-600 px-3 py-1.5 rounded-lg flex items-center max-md:max-w-[150px]">
+        <a href="prayer.html" class="toggle-btn bg-white text-emerald-600 px-2 py-1 rounded-lg flex items-center max-w-[150px]">
           <i class="fas fa-clock mr-2"></i>
           <span class="text-sm font-medium">Prayer Times</span>
         </a>
@@ -56,23 +56,26 @@
       </div>
 
       <!-- Toggle Buttons -->
-      <div class="flex justify-center space-x-3 max-md:flex-col max-md:items-center max-md:gap-3">
-        <!-- Surah and Juz Buttons Container -->
-        <div class="flex justify-center space-x-3  max-md:max-w-[600px]">
-          <button id="surah-mode-btn" class="custom-toggle-btn active  max-md:max-w-[300px] max-md:py-2">
-            <i class="fas fa-book-open mr-2"></i>Surah List
+      <div class="button-group">
+        <!-- Surah and Juz Buttons -->
+        <div class="toggle-buttons">
+          <button id="surah-mode-btn" class="toggle-btn active" aria-label="View Surah List">
+            <i class="fas fa-book-open"></i>
+            <span>Surah List</span>
           </button>
-          <button id="juz-mode-btn" class="custom-toggle-btn  max-md:max-w-[300px] max-md:py-2">
-            <i class="fas fa-bookmark mr-2"></i>Juz List
+          <button id="juz-mode-btn" class="toggle-btn" aria-label="View Juz List">
+            <i class="fas fa-bookmark"></i>
+            <span>Juz List</span>
           </button>
         </div>
-        <!-- Go to Last Reading Button with Tooltip -->
-        <div class="relative group max-md:max-w-[600px]">
-          <button id="last-reading-btn" class="custom-toggle-btn max-md:w-full max-md:py-2" disabled>
-            <i class="fas fa-history mr-2"></i>Go to Last Reading
+        
+        <!-- Last Reading Button with Tooltip -->
+        <div class="last-reading-wrapper">
+          <button id="last-reading-btn" class="toggle-btn" disabled aria-label="Go to Last Reading">
+            <i class="fas fa-history"></i>
+            <span>Go to Last Reading</span>
           </button>
-          <span id="last-reading-tooltip"
-            class="hidden group-hover:block absolute top-[-2.5rem] left-1/2 -translate-x-1/2 bg-gray-900 text-white text-sm font-medium px-4 py-2 rounded-lg whitespace-nowrap shadow-md transition-all duration-200 origin-center scale-0 group-hover:scale-100 z-40">
+          <span id="last-reading-tooltip" class="tooltip">
             No recent reading
           </span>
         </div>
@@ -112,8 +115,6 @@
 
   <script src="data.js"></script>
   <script src="home.js"></script>
-  <script src="prayer.js"></script>
-
 </body>
 
 </html>

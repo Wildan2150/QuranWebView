@@ -125,54 +125,163 @@ html {
 #page-right {
   background-color: #fff;}
 
-/* style.css */
-.custom-toggle-btn {
-  display: flex;
-  align-items: center;
-  padding: 0.75rem 1.5rem;
-  font-weight: 500;
-  font-size: 1rem;
-  border-radius: 0.5rem;
-  border: 2px solid transparent;
-  background-color: #e5e7eb; /* bg-gray-200 */
-  color: #374151; /* text-gray-700 */
-  transition: all 0.1s ease-in-out;
-  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
-}
-
-.custom-toggle-btn:hover {
-  background-color: #d1d5db; /* bg-gray-300 */
-  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); */
-  transform: translateY(-1px);
-}
-
-.custom-toggle-btn.active {
-  background-color: #059669; /* bg-emerald-600 */
-  color: #ffffff; /* text-white */
-  /* border-color: #047857; border-emerald-700 */
-  /* box-shadow: 0 4px 8px rgba(5, 150, 105, 0.3); */
-  transform: translateY(-1px);
-}
-
-.custom-toggle-btn.active:hover {
-  background-color: #047857; /* bg-emerald-700 */
-  /* box-shadow: 0 6px 12px rgba(5, 150, 105, 0.4); */
-}
-
-.custom-toggle-btn i {
-  font-size: 1.1rem;
-}
-
-@media (max-width: 640px) {
-  .custom-toggle-btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-  }
-}
-
 #location-input {
   position: relative;
 }
 #city-dropdown {
   z-index: 10;
+}
+
+/* Reset and Base Styles */
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Toggle Buttons Container */
+.toggle-buttons {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+/* Button Styles */
+.toggle-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 1.25rem; /* Lebih besar untuk mobile */
+  font-size: 1rem; /* Font lebih besar untuk mobile */
+  font-weight: 500;
+  line-height: 1.25;
+  border-radius: 0.5rem;
+  border: none;
+  background-color: #e5e7eb; /* Lighter gray */
+  color: #1f2937; /* Dark text */
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 48px; /* Pastikan ukuran sentuhan minimal */
+}
+
+.toggle-btn i {
+  font-size: 1.25rem; /* Ikon lebih besar untuk mobile */
+}
+
+.toggle-btn:hover {
+  background-color: #d1d5db; /* Lighter gray for hover */
+  transform: translateY(-2px);
+}
+
+.toggle-btn.active {
+  background-color: #059669; /* emerald-600 */
+  color: #ffffff; /* White text */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.toggle-btn.active:hover {
+  background-color: #047857; /* emerald-700, darker hover */
+}
+
+.toggle-btn:disabled {
+  background-color: #d1d5db; /* Lighter gray for disabled */
+  color: #6b7280; /* Lighter muted text */
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Last Reading Button Wrapper */
+.last-reading-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 300px; /* Wider button */
+  display: flex;
+  justify-content: center; /* Center when below */
+}
+
+/* Tooltip */
+.tooltip {
+  display: none;
+  position: absolute;
+  top: -2.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1f2937; /* Darker background */
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 50;
+}
+
+.last-reading-wrapper:hover .tooltip {
+  display: block;
+  animation: fadeIn 0.2s ease forwards;
+}
+
+/* Fade-in Animation for Tooltip */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(0.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Responsive Design (Tablet and Desktop) */
+@media (min-width: 640px) {
+  .button-group {
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .toggle-buttons {
+    flex: 1;
+    gap: 0.75rem;
+  }
+
+  .last-reading-wrapper {
+    flex: none;
+    max-width: 250px; /* Slightly narrower on desktop for balance */
+  }
+
+  .toggle-btn {
+    padding: 0.875rem 1.25rem;
+    font-size: 1rem;
+  }
+
+  .toggle-btn i {
+    font-size: 1.125rem;
+  }
+}
+
+/* Small Mobile Devices */
+@media (max-width: 360px) {
+  .toggle-btn {
+    padding: 0.875rem 1rem; /* Sedikit lebih kecil tapi masih cukup besar */
+    font-size: 0.875rem; /* Font sedikit lebih kecil untuk layar sangat kecil */
+    min-height: 44px; /* Ukuran sentuhan minimal */
+  }
+
+  .toggle-btn i {
+    font-size: 1.125rem; /* Ikon tetap besar */
+  }
+
+  .last-reading-wrapper {
+    max-width: 280px; /* Sedikit lebih kecil untuk layar sangat kecil */
+  }
 }
