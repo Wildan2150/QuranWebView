@@ -45,7 +45,7 @@
                 </div>
                 
                 <button 
-                  onclick="utils.toggleLocationInput()"
+                  onclick="domUtils.toggleLocationInput()"
                   class="text-emerald-500 hover:text-emerald-700 flex items-center text-sm font-semibold transition-colors duration-200 group whitespace-nowrap"
                   aria-label="Ubah lokasi"
                 >
@@ -73,11 +73,24 @@
                   ></div>
                 </div>
                 
+                <!-- Update Location Button (teks : ubah)-->
                 <button 
-                  onclick="utils.updatePrayerLocation()"
+                  onclick="locationUtils.updateLocation()"
                   class="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 hover:shadow-md whitespace-nowrap"
                 >
                   Ubah
+                </button>
+              </div>
+              <!-- Update Location Button (teks : gunakan lokasi saat ini)-->
+              <div class="flex flex-col items-center mt-4 lg:flex-row lg:justify-center lg:gap-2">
+                <span class="text-sm text-gray-400 mb-1 lg:mb-0">Atau</span>
+                <button
+                onclick="locationUtils.detectLocation(); domUtils.toggleLocationInput()"
+                    class="text-emerald-500 hover:text-emerald-700 flex items-center text-sm font-semibold transition-colors duration-200 group whitespace-nowrap"
+                    aria-label="Gunakan lokasi saat ini"
+                    >
+                    <i class="lg:hidden fas fa-map marker-alt mr-1"></i>
+                    Gunakan Lokasi Saat Ini
                 </button>
               </div>
             </div>
