@@ -1,11 +1,11 @@
 /*  */
 html {
   scrollbar-width: thin;
-  scrollbar-color: #10b981 transparent;
+  scrollbar-color: #10b981 #f0f0f0;
 }
 ::-webkit-scrollbar {
   width: 6px;
-  background-color: transparent;
+  background-color: #f0f0f0;
 }
 ::-webkit-scrollbar-thumb {
   background-color: #10b981;
@@ -13,13 +13,13 @@ html {
 }
 .dark {
   scrollbar-width: thin;
-  scrollbar-color: #059669 transparent;
+  scrollbar-color: #059669 #1f2937; /* emerald-600 gray-800*/
 }
 .dark ::-webkit-scrollbar-thumb {
   background-color: #059669;
 }
 .dark ::-webkit-scrollbar {
-  background-color: transparent;
+  background-color: #1f2937; /* gray-800 */
 }
 .page-transition {
   transition: opacity 150ms ease-in-out;
@@ -34,27 +34,6 @@ html {
   scrollbar-width: thin;
 }
 
-  /* 
-
-}
-.surah-list::-webkit-scrollbar {
-  width: 6px;
-}
-.surah-list::-webkit-scrollbar-thumb {
-  background-color: #10b981;
-  border-radius: 3px;
-}
-.juz-list {
-  scrollbar-width: thin;
-  scrollbar-color: #10b981 #f0f0f0;
-}
-.juz-list::-webkit-scrollbar {
-  width: 6px;
-}
-.juz-list::-webkit-scrollbar-thumb {
-  background-color: #10b981;
-  border-radius: 3px;
-} */
 .juz-progress {
   height: 5px;
   background-color: #e5e7eb;
