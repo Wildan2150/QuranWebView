@@ -7,6 +7,7 @@
   <title>Qur'an WebView</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://kit.fontawesome.com/0a9f84347c.js" crossorigin="anonymous"></script>
+  <script>tailwind.config = {darkMode: 'class',}</script>
   <link rel="stylesheet" href="style.css">
   <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
@@ -14,7 +15,7 @@
   <link rel="manifest" href="favicon/site.webmanifest">
 </head>
 
-<body class="bg-gray-50">
+<body class="bg-gray-50 dark:bg-gray-900">
   <!-- Header Section - -->
   <div class="bg-emerald-600 text-white sticky top-0 z-40 content-center shadow-md min-h-[70px] lg:min-h-[70px]">
     <div class="container mx-auto px-4">
@@ -37,44 +38,44 @@
           <!-- Surah Selector -->
           <div class="relative md:w-[16rem]">
             <button id="surah-dropdown-btn"
-              class="w-full bg-white text-emerald-700 p-2.5 rounded-lg flex justify-between items-center hover:bg-gray-50 transition-colors shadow-sm border border-emerald-100">
+              class="w-full bg-white dark:bg-emerald-700 text-emerald-700 dark:text-white p-2.5 rounded-lg flex justify-between items-center hover:bg-gray-50 dark:hover:bg-emerald-600 transition-colors shadow-sm border border-emerald-100 dark:border-white/60">
               <span id="current-surah" class="truncate">Select Surah</span>
-              <i class="fas fa-chevron-down ml-2 transition-transform duration-200 text-emerald-500"></i>
+              <i class="fas fa-chevron-down ml-2 transition-transform duration-200 text-emerald-500 dark:text-gray-200/90"></i>
             </button>
             <div id="surah-dropdown"
-              class="dropdown-content absolute z-20 mt-1.5 w-full bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden">
-              <div class="p-3 border-b border-gray-100">
+              class="dropdown-content absolute z-20 mt-1.5 w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-500 overflow-hidden">
+              <div class="p-3 border-b border-gray-100 dark:border-gray-500">
                 <div class="relative">
                   <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                   <input type="text" id="surah-search" placeholder="Search Surah..."
-                    class="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 text-emerald-700 placeholder-gray-600/60">
+                    class="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-400 dark:focus:ring-emerald-800 focus:border-emerald-400 dark:focus:border-emerald-800 text-emerald-700 placeholder-gray-600/60 dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400">
                 </div>
               </div>
               <div class="surah-list max-h-80 overflow-y-auto">
-                <div id="surah-list" class="divide-y divide-gray-100"></div>
+                <div id="surah-list" class="divide-y divide-gray-100 dark:divide-gray-500"></div>
               </div>
             </div>
           </div>
 
           <!-- Juz Selector -->
-          <div class="relative md:w-[14rem]">
-            <button id="juz-dropdown-btn"
-              class="w-full bg-white text-emerald-700 p-2.5 rounded-lg flex justify-between items-center hover:bg-gray-50 transition-colors shadow-sm border border-emerald-100">
-              <span id="current-juz" class="truncate">Select Juz</span>
-              <i class="fas fa-chevron-down ml-2 transition-transform duration-200 text-emerald-500"></i>
-            </button>
-            <div id="juz-dropdown"
-              class="juz-list dropdown-content absolute z-20 mt-1.5 w-full bg-white rounded-lg shadow-xl border border-gray-200 max-h-80 overflow-y-auto">
-              <div id="juz-list" class="divide-y divide-gray-100"></div>
-            </div>
+        <div class="relative md:w-[14rem]">
+          <button id="juz-dropdown-btn"
+            class="w-full bg-white dark:bg-emerald-700 text-emerald-700 dark:text-white p-2.5 rounded-lg flex justify-between items-center hover:bg-gray-50 dark:hover:bg-emerald-600 transition-colors shadow-sm border border-emerald-100 dark:border-white/60">
+            <span id="current-juz" class="truncate">Select Juz</span>
+            <i class="fas fa-chevron-down ml-2 transition-transform duration-200 text-emerald-500 dark:text-gray-200/90"></i>
+          </button>
+          <div id="juz-dropdown"
+            class="juz-list dropdown-content absolute z-20 mt-1.5 w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-500 max-h-80 overflow-y-auto">
+            <div id="juz-list" class="divide-y divide-gray-100 dark:divide-gray-500"></div>
           </div>
+        </div>
 
-          <!-- Page Controls -->
-          <div class="flex items-center space-x-0 bg-white rounded-lg p-1 shadow-sm border border-emerald-100">
-            <span class="text-emerald-700 px-1.5 text-md">Page:</span>
-            <input class="w-[4rem] py-0 text-emerald-800 text-center bg-transparent focus:outline-none mr-2" id="page-number"
-              type="text" value="1">
-          </div>
+        <!-- Page Controls -->
+        <div class="flex items-center space-x-0 bg-white dark:bg-emerald-700 dark:hover:bg-emerald-600 rounded-lg p-1 shadow-sm border border-emerald-100 dark:border-white/60">
+          <span class="text-emerald-700 dark:text-white px-1.5 text-md">Page:</span>
+          <input class="w-[4rem] py-0 text-emerald-800 dark:text-white text-center bg-transparent focus:outline-none mr-2" id="page-number"
+            type="text" value="1">
+        </div>
 
           <!-- View Mode Buttons -->
           <div class="flex items-center space-x-1 w-22">
@@ -99,95 +100,95 @@
     </div>
   </div>
 
-  <!-- App Drawer with Overlay -->
-  <div id="drawer-overlay" class="drawer-overlay fixed inset-0 bg-black/50 z-40"></div>
-  <div id="app-drawer" class="fixed top-0 left-0 w-full bg-emerald-600 shadow-xl z-50 rounded-b-2xl">
-    <div class="p-5">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-xl font-bold text-white flex items-center">
-          <img src="favicon/android-chrome-white-512x512.png" alt="Logo" class="h-8 mr-2">
-          Qur'an WebView
-        </h2>
-        <button id="close-drawer-btn" class="text-white p-2 rounded-full hover:bg-emerald-500 transition-colors">
-          <i class="fa-solid fa-xmark text-xl"></i>
+<!-- App Drawer with Overlay -->
+<div id="drawer-overlay" class="drawer-overlay fixed inset-0 bg-black/60 z-40"></div>
+<div id="app-drawer" class="fixed top-0 left-0 w-full bg-emerald-600 shadow-xl z-50 rounded-b-2xl">
+  <div class="p-5">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-xl font-bold text-white flex items-center">
+        <img src="favicon/android-chrome-white-512x512.png" alt="Logo" class="h-8 mr-2">
+        Qur'an WebView
+      </h2>
+      <button id="close-drawer-btn" class="text-white p-2 rounded-full hover:bg-emerald-500 dark:hover:bg-emerald-600 transition-colors">
+        <i class="fa-solid fa-xmark text-xl"></i>
+      </button>
+    </div>
+    <div class="space-y-4">
+      <!-- Drawer Surah Selector -->
+      <div class="relative">
+        <button id="drawer-surah-dropdown-btn"
+          class="w-full bg-white dark:bg-emerald-700 text-emerald-700 dark:text-white p-3 rounded-lg flex justify-between items-center hover:bg-gray-50 dark:hover:bg-emerald-500 transition-colors shadow-sm border border-emerald-100 dark:border-white/60">
+          <span id="drawer-current-surah" class="truncate">Select Surah</span>
+          <i class="fas fa-chevron-down ml-2 transition-transform duration-200 text-emerald-500 dark:text-gray-200/90"></i>
+        </button>
+        <div id="drawer-surah-dropdown"
+          class="dropdown-content absolute z-20 mt-2 w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-500 overflow-hidden">
+          <div class="p-3 border-b border-gray-100 dark:border-gray-500">
+            <div class="relative">
+              <i class="fas fa-search absolute left-3 top-3 text-gray-400 dark:text-gray-300"></i>
+              <input type="text" id="drawer-surah-search" placeholder="Search Surah..."
+                class="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-400 dark:focus:ring-emerald-800 focus:border-emerald-400 dark:focus:border-emerald-800 text-emerald-700 dark:text-gray-200 placeholder-gray-600/60 dark:placeholder-gray-400 dark:bg-gray-700">
+            </div>
+          </div>
+          <div class="surah-list max-h-64 overflow-y-auto">
+            <div id="drawer-surah-list" class="divide-y divide-gray-100 dark:divide-gray-500"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Drawer Juz Selector -->
+      <div class="relative">
+        <button id="drawer-juz-dropdown-btn"
+          class="w-full bg-white dark:bg-emerald-700 text-emerald-700 dark:text-white p-3 rounded-lg flex justify-between items-center hover:bg-gray-50 dark:hover:bg-emerald-500 transition-colors shadow-sm border border-emerald-100 dark:border-white/60">
+          <span id="drawer-current-juz" class="truncate">Select Juz</span>
+          <i class="fas fa-chevron-down ml-2 transition-transform duration-200 text-emerald-500 dark:text-gray-200/90"></i>
+        </button>
+        <div id="drawer-juz-dropdown"
+          class="juz-list dropdown-content absolute z-20 mt-2 w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-500 max-h-64 overflow-y-auto">
+          <div id="drawer-juz-list" class="divide-y divide-gray-100 dark:divide-gray-500"></div>
+        </div>
+      </div>
+
+      <!-- Drawer Page Controls -->
+      <div class="flex justify-between items-center space-x-0 bg-white dark:bg-emerald-700 rounded-lg p-1.5 shadow-sm border border-emerald-100 dark:border-white/60">
+        <span class="text-emerald-700 dark:text-white px-2 text-md">Page:</span>
+        <input id="drawer-page-number" class="text-emerald-700 dark:text-white w-16 py-1.5 text-center bg-transparent focus:outline-none" type="text"
+          value="1">
+        <div class="flex-grow"></div>
+        <button id="drawer-page-go" class="py-1.5 px-2 text-emerald-500 dark:text-white/80 hover:text-emerald-700 dark:hover:text-white focus:outline-none">
+          <i class="fas fa-arrow-right text-xl"></i>
         </button>
       </div>
-      <div class="space-y-4">
-        <!-- Drawer Surah Selector -->
-        <div class="relative">
-          <button id="drawer-surah-dropdown-btn"
-            class="w-full bg-white text-emerald-700 p-3 rounded-lg flex justify-between items-center hover:bg-gray-50 transition-colors shadow-sm">
-            <span id="drawer-current-surah" class="truncate">Select Surah</span>
-            <i class="fas fa-chevron-down ml-2 transition-transform duration-200 text-emerald-500"></i>
-          </button>
-          <div id="drawer-surah-dropdown"
-            class="dropdown-content absolute z-20 mt-2 w-full bg-white rounded-lg shadow-xl border border-gray-200">
-            <div class="p-3 border-b border-gray-100">
-              <div class="relative">
-                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                <input type="text" id="drawer-surah-search" placeholder="Search Surah..."
-                  class="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 text-emerald-700 placeholder-gray-600/60">
-              </div>
-            </div>
-            <div class="surah-list max-h-64 overflow-y-auto">
-              <div id="drawer-surah-list" class="divide-y divide-gray-100"></div>
-            </div>
-          </div>
-        </div>
 
-        <!-- Drawer Juz Selector -->
-        <div class="relative">
-          <button id="drawer-juz-dropdown-btn"
-            class="w-full bg-white text-emerald-700 p-3 rounded-lg flex justify-between items-center hover:bg-gray-50 transition-colors shadow-sm">
-            <span id="drawer-current-juz" class="truncate">Select Juz</span>
-            <i class="fas fa-chevron-down ml-2 transition-transform duration-200 text-emerald-500"></i>
-          </button>
-          <div id="drawer-juz-dropdown"
-            class="juz-list dropdown-content absolute z-20 mt-2 w-full bg-white rounded-lg shadow-xl border border-gray-200 max-h-64 overflow-y-auto">
-            <div id="drawer-juz-list" class="divide-y divide-gray-100"></div>
-          </div>
-        </div>
-
-        <!-- Drawer Page Controls -->
-        <div class="flex justify-between items-center space-x-0 bg-white rounded-lg p-1.5 shadow-sm">
-          <span class="text-emerald-700 px-2 text-md">Page:</span>
-          <input id="drawer-page-number" class="text-emerald-700 w-16 py-1.5 text-center bg-transparent focus:outline-none" type="text"
-            value="1">
-          <div class="flex-grow"></div>
-          <button id="drawer-page-go" class="py-1.5 px-2 text-emerald-500 hover:text-emerald-700 focus:outline-none">
-            <i class="fas fa-arrow-right text-xl"></i>
-          </button>
-        </div>
-
-        <!-- Drawer View Mode Buttons -->
-        <div class="flex items-center justify-center space-x-3 pt-2">
-          <button id="drawer-single-page-button"
-            class="bg-emerald-600 text-white p-3 rounded-lg hover:bg-emerald-700 transition-colors shadow-md flex flex-col items-center">
-            <i class="fa-solid fa-file mb-1"></i>
-            <span class="text-xs">Single Page</span>
-          </button>
-          <button id="drawer-two-page-button"
-            class="bg-emerald-600 text-white p-3 rounded-lg hover:bg-emerald-700 transition-colors shadow-md flex flex-col items-center">
-            <i class="fa-solid fa-book-open mb-1"></i>
-            <span class="text-xs">Two Page</span>
-          </button>
-          <button id="drawer-fullscreen-button"
-            class="bg-emerald-600 text-white p-3 rounded-lg hover:bg-emerald-700 transition-colors shadow-md flex flex-col items-center">
-            <i class="fas fa-expand mb-1"></i>
-            <span class="text-xs mt-1">Fullscreen</span>
-          </button>
-        </div>
+      <!-- Drawer View Mode Buttons -->
+      <div class="flex items-center justify-center space-x-3 pt-2">
+        <button id="drawer-single-page-button"
+          class="bg-emerald-600 dark:bg-emerald-700 text-white p-3 rounded-lg hover:bg-emerald-700 dark:hover:bg-emerald-600 transition-colors shadow-md flex flex-col items-center">
+          <i class="fa-solid fa-file mb-1"></i>
+          <span class="text-xs">Single Page</span>
+        </button>
+        <button id="drawer-two-page-button"
+          class="bg-emerald-600 dark:bg-emerald-700 text-white p-3 rounded-lg hover:bg-emerald-700 dark:hover:bg-emerald-600 transition-colors shadow-md flex flex-col items-center">
+          <i class="fa-solid fa-book-open mb-1"></i>
+          <span class="text-xs">Two Page</span>
+        </button>
+        <button id="drawer-fullscreen-button"
+          class="bg-emerald-600 dark:bg-emerald-700 text-white p-3 rounded-lg hover:bg-emerald-700 dark:hover:bg-emerald-600 transition-colors shadow-md flex flex-col items-center">
+          <i class="fas fa-expand mb-1"></i>
+          <span class="text-xs mt-1">Fullscreen</span>
+        </button>
       </div>
     </div>
   </div>
+</div>
 
   <!-- Main Content -->
   <div class="container mx-auto py-4 md:py-6 px-4" id="quran-container">
     <!-- Juz Progress Indicator -->
-    <div class="mb-6 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+    <div class="mb-6 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
       <div class="flex justify-between text-sm text-gray-600 mb-2">
-        <span id="current-juz-display" class="font-medium text-emerald-700">Juz 1</span>
-        <span id="juz-page-range" class="text-gray-500">Page 1-21</span>
+        <span id="current-juz-display" class="font-medium text-emerald-700 dark:text-gray-200">Juz 1</span>
+        <span id="juz-page-range" class="text-gray-500 dark:text-gray-400">Page 1-21</span>
       </div>
       <div class="juz-progress rounded-full">
         <div id="juz-progress-fill" class="juz-progress-fill rounded-full" style="width: 5%"></div>
@@ -197,16 +198,16 @@
     <main class="container mx-auto p-1 md:px-6 min-h-[50vh]">
       <div class="flex justify-center flex-row-reverse ">
         <!-- Left Page -->
-        <div class="bg-white shadow-md rounded-xl p-4 md:p-5 border border-gray-100 relative">
-          <div id="page-left-loader" class="loader-container absolute inset-0 flex items-center justify-center bg-white/80 hidden">
+        <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4 md:p-5 border border-gray-100 dark:border-gray-700 relative">
+          <div id="page-left-loader" class="loader-container absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-transparent hidden">
             <div class="loader"></div>
           </div>
           <img alt="Quran page" src="placeholder.png" class="w-full max-h-[80vh] md:max-h-[85vh] page-transition opacity-100 object-contain" id="page-left" decoding="async">
           <i id="bookmark-icon-left" class="hidden fas fa-bookmark absolute top-1 right-2 text-yellow-500 text-2xl"></i>
         </div>
         <!-- Right Page -->
-        <div class="bg-white shadow-md rounded-xl p-4 md:p-5 ml-3 md:ml-5 border border-gray-100 relative" id="page-right-container">
-          <div id="page-right-loader" class="loader-container absolute inset-0 flex items-center justify-center bg-white/80 hidden">
+        <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4 md:p-5 ml-3 md:ml-5 border border-gray-100 dark:border-gray-700 relative" id="page-right-container">
+          <div id="page-right-loader" class="loader-container absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-transparent hidden">
             <div class="loader"></div>
           </div>
           <img alt="Quran page" src="placeholder.png" class="w-full max-h-[80vh] md:max-h-[85vh] page-transition opacity-100 object-contain" id="page-right" decoding="async">
@@ -219,7 +220,7 @@
     <div class="flex justify-center mt-6 sm:mt-6 space-x-4 lg:hidden">
       <!-- Mobile Next Button -->
       <button id="next-btn-mobile"
-        class="flex-1 max-w-[12rem] bg-emerald-600 text-white px-4 py-3 rounded-full shadow-lg hover:bg-emerald-700 transition-transform duration-100 ease-out active:scale-95 transform">
+        class="flex-1 max-w-[12rem] bg-emerald-600 dark:bg-emerald-600/30 text-white px-4 py-3 rounded-full shadow-lg hover:bg-emerald-700 transition-transform duration-100 ease-out active:scale-95 transform">
         <div class="flex items-center justify-center">
           <i class="fas fa-arrow-left mr-2 text-sm"></i>
           <span class="font-medium text-md sm:text-sm">Next</span>
@@ -228,7 +229,7 @@
     
       <!-- Mobile Previous Button -->
       <button id="prev-btn-mobile"
-        class="flex-1 max-w-[12rem] bg-emerald-600 text-white px-4 py-3 rounded-full shadow-lg hover:bg-emerald-700 transition-transform duration-100 ease-out active:scale-95 transform">
+        class="flex-1 max-w-[12rem] bg-emerald-600 dark:bg-emerald-600/30 text-white px-4 py-3 rounded-full shadow-lg hover:bg-emerald-700 transition-transform duration-100 ease-out active:scale-95 transform">
         <div class="flex items-center justify-center">
           <span class="font-medium text-md sm:text-sm">Previous</span>
           <i class="fas fa-arrow-right ml-2 text-sm"></i>
@@ -237,28 +238,28 @@
     </div>
 
     <!-- Desktop Navigation Buttons -->
-    <div class="hidden lg:block">
-      <!-- Desktop Next Button -->
-      <button id="next-btn-desktop"
-        class="nav-button fixed top-1/2 left-6 transform -translate-y-1/2 bg-white shadow-md p-3 text-emerald-600 hover:text-emerald-800 text-4xl rounded-full transition group">
-        <i class="fa-solid fa-circle-chevron-left"></i>
-        <span class="hidden lg:group-hover:inline absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-sm font-medium px-4 py-2 rounded-lg whitespace-nowrap shadow-md transition-all duration-200 origin-left scale-0 lg:group-hover:scale-100">
-          Next Page
-          <span class="absolute right-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-t-transparent border-b-4 border-b-transparent border-r-4 border-r-gray-900"></span>
-        </span>
-      </button>
+<div class="hidden lg:block">
+  <!-- Desktop Next Button -->
+  <button id="next-btn-desktop"
+    class="nav-button fixed top-1/2 left-6 transform -translate-y-1/2 bg-white dark:bg-white/5 shadow-md p-3 text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 text-4xl rounded-full transition group">
+    <i class="fa-solid fa-circle-chevron-left"></i>
+    <span class="hidden lg:group-hover:inline absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-gray-900 dark:bg-gray-700 text-white dark:text-gray-200 text-sm font-medium px-4 py-2 rounded-lg whitespace-nowrap shadow-md transition-all duration-200 origin-left scale-0 lg:group-hover:scale-100">
+      Next Page
+      <span class="absolute right-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-t-transparent border-b-4 border-b-transparent border-r-4 border-r-gray-900 dark:border-r-gray-700"></span>
+    </span>
+  </button>
 
-      <!-- Desktop Previous Button -->
-      <button id="prev-btn-desktop"
-        class="nav-button fixed top-1/2 right-6 transform -translate-y-1/2 bg-white shadow-md p-3 text-emerald-600 hover:text-emerald-800 text-4xl rounded-full transition group">
-        <i class="fa-solid fa-circle-chevron-right"></i>
-        <span class="hidden lg:group-hover:inline absolute right-full mr-4 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-sm font-medium px-4 py-2 rounded-lg whitespace-nowrap shadow-md transition-all duration-200 origin-right scale-0 lg:group-hover:scale-100">
-          Previous Page
-          <span class="absolute left-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-t-transparent border-b-4 border-b-transparent border-l-4 border-l-gray-900"></span>
-        </span>
-      </button>
-    </div>
-  </div>
+  <!-- Desktop Previous Button -->
+  <button id="prev-btn-desktop"
+    class="nav-button fixed top-1/2 right-6 transform -translate-y-1/2 bg-white dark:bg-white/5 shadow-md dark:shadow-none p-3 text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 text-4xl rounded-full transition group">
+    <i class="fa-solid fa-circle-chevron-right"></i>
+    <span class="hidden lg:group-hover:inline absolute right-full mr-4 top-1/2 -translate-y-1/2 bg-gray-900 dark:bg-gray-700 text-white dark:text-gray-200 text-sm font-medium px-4 py-2 rounded-lg whitespace-nowrap shadow-md transition-all duration-200 origin-right scale-0 lg:group-hover:scale-100">
+      Previous Page
+      <span class="absolute left-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-t-transparent border-b-4 border-b-transparent border-l-4 border-l-gray-900 dark:border-l-gray-700"></span>
+    </span>
+  </button>
+</div>
+</div>
 
   <!-- Footer -->
   <footer class="bg-gray-800 text-white py-5 mt-8 w-full">
@@ -277,7 +278,4 @@
 </body>
 
 </html>
-<!--
-ACKNOWLEDGMENT
-I would like to express my sincere gratitude to Quran Kemenag for providing the Quran pages, which served as the core content for the Quran WebView project. I am also deeply thankful for the invaluable support of the tools and platforms that were essential in generating this web application. A special acknowledgment to BlackBox AI, ChatGPT, DeepSeek, and Grok for their powerful capabilities in generating not only the core structure and functionality of the web viewer but also the JavaScript that powers the dynamic interactions and responsiveness of the app. Additionally, I greatly appreciate Tailwind CSS for providing a flexible and efficient framework that facilitated the creation of a responsive, user-friendly interface. I also acknowledge FontAwesome and Flaticon for their high-quality icons, which enhanced the visual appeal and usability of the application. While I made minor adjustments to optimize the presentation and user experience, this project would not have been possible without the innovative technologies and resources provided by these platforms.
--->
+

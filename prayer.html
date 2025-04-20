@@ -7,6 +7,7 @@
     <title>Jadwal Sholat - Qur'an WebView</title>
     <script src="https://cdn.tailwindcss.com/3.4.14"></script>
     <script src="https://kit.fontawesome.com/0a9f84347c.js" crossorigin="anonymous"></script>
+    <script>tailwind.config = {darkMode: 'class',}</script>
     <link rel="stylesheet" href="style.css">
     <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
@@ -14,7 +15,7 @@
     <link rel="manifest" href="favicon/site.webmanifest">
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-gray-100 dark:bg-gray-900">
     <!-- Header -->
     <div class="bg-emerald-600 content-center text-white sticky z-40 top-0 shadow-md min-h-[70px] lg:min-h-[70px]">
         <div class="container mx-auto px-4">
@@ -28,18 +29,17 @@
         </div>
     </div>
 
-    <!-- Konten Utama -->
+    <!-- Main Content -->
     <div class="container mx-auto px-4 py-6">
-        <div class="bg-white rounded-xl shadow-xl p-6 mb-6 border-emerald-100">
-            <!-- Header -->
-            <h2 class="text-xl font-bold text-gray-800 mb-3">Jadwal Sholat Hari Ini</h2>
-            
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 mb-6 border-emerald-100">
+            <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-3">Jadwal Sholat Hari Ini</h2>
+
             <!-- Date and Location Section -->
             <div class="space-y-3 mb-4">
-              <div class="text-sm text-emerald-600 font-semibold" id="combined-date">Hari, Tanggal</div>
+              <div class="text-sm text-emerald-600 dark:text-gray-200 font-semibold" id="combined-date">Hari, Tanggal</div>
               
               <div class="flex items-center justify-between">
-                <div class="text-sm text-emerald-600 font-semibold">
+                <div class="text-sm text-emerald-600 dark:text-gray-200 font-semibold">
                   <span class="sr-only lg:not-sr-only lg:mr-1">Lokasi:</span>
                   <span id="current-location">...</span>
                 </div>
@@ -47,7 +47,7 @@
                 <button 
                   onclick="domUtils.toggleLocationInput()"
                   class="text-emerald-500 hover:text-emerald-700 flex items-center text-sm font-semibold transition-colors duration-200 group whitespace-nowrap"
-                  aria-label="Ubah lokasi"
+                  aria-label="Ubah Lokasi"
                 >
                   <i class="fas fa-map-marker-alt mr-1 group-hover:scale-110 transition-transform duration-200"></i>
                   Ubah Lokasi
@@ -61,19 +61,19 @@
                 <div class="flex-1 relative">
                   <input 
                     id="city-input" 
-                    type="text" 
-                    placeholder="Masukkan nama kota"
-                    class="w-full p-3 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white shadow-sm transition-all duration-200"
+                    type="text"
+                    placeholder="Masukkan nama kota" 
+                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-500 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 dark:text-gray-200"
                     autocomplete="off"
                     aria-label="Masukkan nama kota"
                   />
                   <div 
                     id="city-dropdown"
-                    class="hidden absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto"
+                    class="hidden absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto"
                   ></div>
                 </div>
                 
-                <!-- Update Location Button (teks : ubah)-->
+                <!-- Update Location Button -->
                 <button 
                   onclick="locationUtils.updateLocation()"
                   class="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 hover:shadow-md whitespace-nowrap"
@@ -81,21 +81,21 @@
                   Ubah
                 </button>
               </div>
-              <!-- Update Location Button (teks : gunakan lokasi saat ini)-->
-              <div class="flex flex-col items-center mt-4 lg:flex-row lg:justify-center lg:gap-2">
-                <span class="text-sm text-gray-400 mb-1 lg:mb-0">Atau</span>
+              <!-- Use Current Location Button -->
+              <div class="flex flex-col items-center mt-4 lg:flex-row lg:justify-center lg:gap-1">
+                <span class="text-sm text-gray-500 dark:text-gray-400 mb-1 lg:mb-0">Atau</span>
                 <button
-                onclick="locationUtils.detectLocation(); domUtils.toggleLocationInput()"
+                    onclick="useCurrentLocation()"
                     class="text-emerald-500 hover:text-emerald-700 flex items-center text-sm font-semibold transition-colors duration-200 group whitespace-nowrap"
-                    aria-label="Gunakan lokasi saat ini"
-                    >
+                    aria-label="Use current location"
+                >
                     <i class="lg:hidden fas fa-map marker-alt mr-1"></i>
                     Gunakan Lokasi Saat Ini
                 </button>
               </div>
             </div>
           
-            <hr class="h-px my-4 bg-gray-200 border-0">
+            <hr class="h-px my-4 bg-gray-200 dark:bg-gray-700 border-0">
           
             <!-- Prayer Times Grid -->
             <div 
@@ -103,17 +103,17 @@
               class="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-4 lg:grid-cols-7"
               aria-live="polite"
             >
-              <p class="text-sm text-gray-800 mt-4 text-center col-span-full">Memuat Jadwal Sholat...</p>
+              <p class="text-sm text-gray-800 dark:text-gray-200 mt-4 text-center col-span-full">Memuat Jadwal Sholat...</p>
             </div>
           
             <!-- Disclaimer -->
-            <p class="text-sm text-gray-500 mt-4 text-center italic">
-              Waktu Sholat dihitung berdasarkan lokasi Anda. Demi kesempurnaan ibadah, pastikan kesesuaiannya dengan jadwal masjid terdekat.
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-4 text-center italic">
+              Jadwal sholat dihitung berdasarkan koordinat lokasi Anda. Tetap jadikan masjid terdekat sebagai acuan utama.
             </p>
           </div>
-        <!-- Jadwal Bulanan -->
-        <div class="bg-white rounded-xl shadow-xl p-6">
-            <h3 id="monthly-prayer-title" class="text-lg font-semibold text-gray-800 mb-4">Jadwal Sholat Bulan</h3>
+        <!-- Monthly Schedule -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6">
+            <h3 id="monthly-prayer-title" class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Jadwal Sholat Bulan Ini</h3>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>
@@ -123,7 +123,7 @@
                             <th class="p-3 text-left">Dzuhur</th>
                             <th class="p-3 text-left">Ashar</th>
                             <th class="p-3 text-left">Maghrib</th>
-                            <th class="p-3 text-left rounded-tr-lg">Isya</th>
+                            <th class="p-3 text-left rounded-tr-lg">Isya'</th>
                         </tr>
                     </thead>
                     <tbody id="monthly-prayer-times" class="divide-y divide-gray-200"></tbody>

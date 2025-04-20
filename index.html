@@ -7,6 +7,7 @@
   <title>Qur'an WebView</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://kit.fontawesome.com/0a9f84347c.js" crossorigin="anonymous"></script>
+  <script>tailwind.config = {darkMode: 'class',}</script>
   <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
@@ -20,8 +21,8 @@
   <link rel="prefetch" href="data.js" as="script">
 </head>
 
-<body class="bg-gray-50">
-  <!-- Header -->
+<body class="bg-gray-50 dark:bg-gray-900">
+  <!-- Header --> 
   <div class="bg-emerald-600 content-center text-white sticky z-40 top-0 shadow-md min-h-[70px] lg:min-h-[70px]">
     <div class="container mx-auto px-4">
       <div class="flex justify-between items-center py-2">
@@ -30,25 +31,34 @@
           <img src="favicon/android-chrome-white-512x512.png" alt="Logo" class="h-8 mr-2 lg:mr-3">
           <span>Qur'an WebView</span>
         </a>
-        <!-- Tombol Prayer Times -->
-        <a href="prayer.html" class="toggle-btn bg-white text-emerald-600 px-2 py-1 rounded-lg flex items-center max-w-[150px]">
-          <i class="fas fa-clock mr-2"></i>
-          <span class="text-sm font-medium">Prayer Times</span>
-        </a>
+        <div class="flex items-center space-x-2">
+          <!-- Tombol Prayer Times -->
+          <a href="prayer.html" class="flex items-center bg-white/10 text-white px-4 py-2.5 rounded-lg hover:bg-white/20 hover:-translate-y-[2px] transition duration-200">
+            <i class="fas fa-clock mr-2"></i>
+            <span class="text-md font-medium items-center">Prayer Times</span>
+          </a>
+          <!-- darkmode button -->
+          <button id="dark-mode-toggle-desktop" class="px-4 py-2.5 rounded-lg bg-white/10 hover:bg-white/20 hover:-translate-y-0.5 transition duration-200 md:block hidden" aria-label="Toggle Dark Mode">
+            <i class="fas fa-moon text-white"></i>
+          </button>
+        </div>
       </div>
     </div>
   </div>
-
+ <!-- Tombol dark mode duplikat untuk ponsel -->
+<button id="dark-mode-toggle-mobile" class="px-4 py-2.5 rounded-lg bg-gray-500/50 hover:bg-gray-500 hover:-translate-y-0.5 transition duration-200 fixed bottom-5 right-5 z-50 md:hidden block" aria-label="Toggle Dark Mode">
+  <i class="fas fa-moon text-white"></i>
+</button>
   <!-- Search and Toggle Section -->
   <div class="container mx-auto px-4 py-4">
-    <div class="bg-white rounded-lg shadow-sm p-4 mb-0">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-0 lg:mb-6">
       <!-- Search Bar -->
       <div class="relative mb-4">
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <i class="fas fa-search text-gray-400"></i>
         </div>
         <input type="text" id="search-input"
-          class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:ring-emerald-500 focus:border-emerald-500"
+          class="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-500 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 dark:text-gray-200 "
           placeholder="Search Surah, Juz, or Page" autocomplete="off">
         <button id="clear-search" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden">
           <i class="fas fa-times text-gray-400 hover:text-gray-600"></i>

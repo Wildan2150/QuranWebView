@@ -1,6 +1,3 @@
-// home.js
-console.log('home.js loaded');
-
 // DOM Elements
 const elements = {
   searchInput: document.getElementById('search-input'),
@@ -12,29 +9,43 @@ const elements = {
   surahContainer: document.getElementById('surah-container'),
   juzContainer: document.getElementById('juz-container'),
   lastReadingBtn: document.getElementById('last-reading-btn'),
-  lastReadingTooltip: document.getElementById('last-reading-tooltip')
-};
+  lastReadingTooltip: document.getElementById('last-reading-tooltip'),
+  darkModeToggle: document.querySelectorAll('#dark-mode-toggle-desktop, #dark-mode-toggle-mobile')};
 
 // State
 const state = {
   currentMode: 'surah',
   allSurahs: [],
-  allJuzs: []
-};
+  allJuzs: [],
+  isDarkMode: localStorage.getItem('darkMode') === 'true' || 
+    (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)
+}; 
 
 // Utility Functions
 const utils = {
   showElement: (el) => el.classList.remove('hidden'),
   hideElement: (el) => el.classList.add('hidden'),
   toggleActive: (activeEl, inactiveEl) => {
-    activeEl.classList.add('active');
-    inactiveEl.classList.remove('active');
+    activeEl.classList.add('active', 'bg-emerald-600', 'text-white');
+    activeEl.classList.remove('bg-gray-200', 'text-gray-700', 'dark:bg-gray-600', 'dark:text-gray-200');
+    inactiveEl.classList.remove('active', 'bg-emerald-600', 'text-white');
+    inactiveEl.classList.add('bg-gray-200', 'text-gray-700', 'dark:bg-gray-600', 'dark:text-gray-200');
   },
   renderError: (container, message) => {
-    container.innerHTML = `<p class="text-center text-red-600 col-span-full">${message}</p>`;
+    container.innerHTML = `<p class="text-center text-red-600 dark:text-red-400 col-span-full">${message}</p>`;
   },
   renderNoResults: (container) => {
-    container.innerHTML = '<p class="text-center text-gray-500 col-span-full py-6">No results found matching your search.</p>';
+    container.innerHTML = '<p class="text-center text-gray-500 dark:text-gray-400 col-span-full py-6">No results found matching your search.</p>';
+  },
+  toggleDarkMode: (isDark) => {
+    state.isDarkMode = isDark;
+    localStorage.setItem('darkMode', isDark);
+    document.documentElement.classList.toggle('dark', isDark);
+    elements.darkModeToggle.forEach(button => {
+      button.innerHTML = isDark 
+        ? '<i class="fas fa-moon text-white"></i>' 
+        : '<i class="fas fa-sun text-white"></i>';
+    });
   }
 };
 
@@ -54,16 +65,16 @@ const render = {
     }
 
     surahContainer.innerHTML = surahs.map(surah => `
-      <div class="bg-white rounded-lg shadow-md p-4 sm:p-3 md:p-3 lg:p-5 hover:shadow-lg transition-shadow cursor-pointer"
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-3 md:p-3 lg:p-5 hover:shadow-lg dark:hover:bg-gray-700 transition duration-50 cursor-pointer"
            onclick="window.location.href='read.html?page=${surah.page}'">
         <div class="flex items-center justify-between gap-3 sm:gap-2 md:gap-2 lg:gap-4">
           <div class="flex items-center flex-1 min-w-0">
-            <div class="bg-emerald-100 text-emerald-800 rounded-full w-10 h-10 sm:w-8 sm:h-8 md:w-8 md:h-8 lg:w-10 lg:h-10 flex items-center justify-center flex-shrink-0 mr-2">
+            <div class="bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-gray-200 rounded-full w-10 h-10 sm:w-8 sm:h-8 md:w-8 md:h-8 lg:w-10 lg:h-10 flex items-center justify-center flex-shrink-0 mr-2">
               <h4 class="font-bold">${surah.number || "N/A"}</h4>
             </div>
             <div class="flex-1 px-2 sm:px-1 md:px-1 lg:px-3 min-w-0">
-              <h4 class="font-bold text-lg text-emerald-700">${surah.name || "Unknown"}</h4>
-              <div class="flex flex-wrap items-center text-sm text-gray-500 mt-1 gap-1 sm:gap-0.5 md:gap-0.5 lg:gap-1">
+              <h4 class="font-bold text-lg text-emerald-700 dark:text-gray-200 ">${surah.name || "Unknown"}</h4>
+              <div class="flex flex-wrap items-center text-sm text-gray-500 dark:text-gray-400 mt-1 gap-1 sm:gap-0.5 md:gap-0.5 lg:gap-1">
                 <span>${surah.revelation || "N/A"}</span>
                 <span> • </span>
                 <span>${surah.verses || "N/A"} Ayahs</span>
@@ -73,7 +84,7 @@ const render = {
             </div>
           </div>
           <div class="flex justify-end items-center flex-shrink-0 min-w-0 sm:min-w-[20px] md:min-w-[20px] lg:min-w-0">
-            <h4 class="arabic-text text-2xl text-gray-800">${surah.arabic || "غير متوفر"}</h4>
+            <h4 class="arabic-text text-2xl text-gray-800 dark:text-gray-200">${surah.arabic || "غير متوفر"}</h4>
           </div>
         </div>
       </div>
@@ -95,17 +106,17 @@ const render = {
     }
 
     juzContainer.innerHTML = juzs.map(juz => `
-      <div class="bg-white rounded-lg shadow-md p-4 sm:p-3 md:p-4 lg:p-5 hover:shadow-lg transition-shadow cursor-pointer"
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-3 md:p-4 lg:p-5 hover:shadow-lg dark:hover:bg-gray-700 transition duration-50 cursor-pointer"
            onclick="window.location.href='read.html?page=${juz.start}'">
         <div class="flex items-center gap-3 sm:gap-2 md:gap-3 lg:gap-4">
-          <div class="bg-emerald-100 text-emerald-800 rounded-full w-10 h-10 sm:w-8 sm:h-8 md:w-10 md:h-10 flex items-center justify-center flex-shrink-0 mr-1">
+          <div class="bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-gray-200 rounded-full w-10 h-10 sm:w-8 sm:h-8 md:w-10 md:h-10 flex items-center justify-center flex-shrink-0 mr-1">
             <h4 class="font-bold text-base sm:text-sm md:text-base">${juz.number}</h4>
           </div>
           <div class="flex-1 min-w-0">
             <div class="flex justify-between items-center">
-              <h4 class="font-bold text-lg sm:text-base md:text-lg lg:text-xl text-emerald-700 truncate">Juz ${juz.number}</h4>
+              <h4 class="font-bold text-lg sm:text-base md:text-lg lg:text-xl text-emerald-700 dark:text-gray-200 truncate">Juz ${juz.number}</h4>
             </div>
-            <div class="flex items-center text-sm sm:text-xs md:text-sm text-gray-500 mt-1 gap-1 sm:gap-0.5 md:gap-1 whitespace-nowrap">
+            <div class="flex items-center text-sm sm:text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1 gap-1 sm:gap-0.5 md:gap-1 whitespace-nowrap">
               <span>Page ${juz.start}-${juz.end}</span>
               <span> • </span>
               <span class="truncate">${
@@ -123,15 +134,15 @@ const render = {
 
   pageCard: (pageNum, container) => {
     const card = document.createElement("div");
-    card.className = "bg-white rounded-lg shadow-md p-4 sm:p-3 md:p-3 lg:p-5 hover:shadow-lg transition-shadow cursor-pointer mb-0";
+    card.className = "bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-3 md:p-3 lg:p-5 hover:shadow-lg dark:hover:bg-gray-700 transition duration-50 cursor-pointer mb-0";
     card.innerHTML = `
       <div class="flex flex-col items-start justify-center text-center ml-4">
-        <p class="font-bold text-lg text-emerald-700">Page ${pageNum}</p>
-        <p class="text-sm sm:text-xs md:text-sm text-gray-500 mt-1">Go to Page ${pageNum}</p>
+        <p class="font-bold text-lg text-emerald-700 dark:text-gray-200">Page ${pageNum}</p>
+        <p class="text-sm sm:text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1">Go to Page ${pageNum}</p>
       </div>
     `;
     card.onclick = () => (window.location.href = `read.html?page=${pageNum}`);
-    container.prepend(card); // Use prepend to add to top
+    container.prepend(card);
   },
 };
 
@@ -139,7 +150,7 @@ const render = {
 const filter = {
   surahs: (searchTerm) => {
     const { surahContainer } = elements;
-    surahContainer.innerHTML = ''; // Clear container first
+    surahContainer.innerHTML = '';
     
     if (!searchTerm) {
       return render.surah(state.allSurahs);
@@ -150,13 +161,10 @@ const filter = {
     const pageMatch = term.match(/^page\s+(\d+)$/);
     const pageNum = numberMatch ? parseInt(numberMatch[0]) : pageMatch ? parseInt(pageMatch[1]) : null;
     
-    // Show page card if it's a valid page number (1-604)
     if (pageNum >= 1 && pageNum <= 604) {
       render.pageCard(pageNum, surahContainer);
     }
     
-    
-    // Filter surahs by search term
     const filtered = state.allSurahs.filter(surah => 
       (surah.name?.toLowerCase().includes(term)) ||
       (surah.arabic?.includes(term)) ||
@@ -164,21 +172,20 @@ const filter = {
       (surah.revelation?.toLowerCase().includes(term))
     );
     
-    // Render filtered surahs
     if (filtered.length > 0) {
       const fragment = document.createDocumentFragment();
       filtered.forEach(surah => {
         const div = document.createElement('div');
-        div.className = "bg-white rounded-lg shadow-md p-4 sm:p-3 md:p-3 lg:p-5 hover:shadow-lg transition-shadow cursor-pointer";
+        div.className = "bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-3 md:p-3 lg:p-5 hover:shadow-lg dark:hover:bg-gray-700 transition duration-50 cursor-pointer";
         div.innerHTML = `
           <div class="flex items-center justify-between gap-3 sm:gap-2 md:gap-2 lg:gap-4">
             <div class="flex items-center flex-1 min-w-0">
-              <div class="bg-emerald-100 text-emerald-800 rounded-full w-10 h-10 sm:w-8 sm:h-8 md:w-8 md:h-8 lg:w-10 lg:h-10 flex items-center justify-center flex-shrink-0 mr-2">
+              <div class="bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-gray-200 rounded-full w-10 h-10 sm:w-8 sm:h-8 md:w-8 md:h-8 lg:w-10 lg:h-10 flex items-center justify-center flex-shrink-0 mr-2">
                 <h4 class="font-bold">${surah.number || "N/A"}</h4>
               </div>
               <div class="flex-1 px-2 sm:px-1 md:px-1 lg:px-3 min-w-0">
-                <h4 class="font-bold text-lg text-emerald-700">${surah.name || "Unknown"}</h4>
-                <div class="flex flex-wrap items-center text-sm text-gray-500 mt-1 gap-1 sm:gap-0.5 md:gap-0.5 lg:gap-1">
+                <h4 class="font-bold text-lg text-emerald-700 dark:text-gray-200 ">${surah.name || "Unknown"}</h4>
+                <div class="flex flex-wrap items-center text-sm text-gray-500 dark:text-gray-400 mt-1 gap-1 sm:gap-0.5 md:gap-0.5 lg:gap-1">
                   <span>${surah.revelation || "N/A"}</span>
                   <span> • </span>
                   <span>${surah.verses || "N/A"} Ayahs</span>
@@ -188,7 +195,7 @@ const filter = {
               </div>
             </div>
             <div class="flex justify-end items-center flex-shrink-0 min-w-0 sm:min-w-[20px] md:min-w-[20px] lg:min-w-0">
-              <h4 class="arabic-text text-2xl text-gray-800">${surah.arabic || "غير متوفر"}</h4>
+              <h4 class="arabic-text text-2xl text-gray-800 dark:text-gray-200">${surah.arabic || "غير متوفر"}</h4>
             </div>
           </div>
         `;
@@ -203,7 +210,7 @@ const filter = {
 
   juzs: (searchTerm) => {
     const { juzContainer } = elements;
-    juzContainer.innerHTML = ''; // Clear container first
+    juzContainer.innerHTML = '';
     
     if (!searchTerm) {
       return render.juz(state.allJuzs);
@@ -214,12 +221,10 @@ const filter = {
     const pageMatch = term.match(/^page\s+(\d+)$/);
     const pageNum = numberMatch ? parseInt(numberMatch[0]) : pageMatch ? parseInt(pageMatch[1]) : null;
     
-    // Show page card if it's a valid page number (1-604)
     if (pageNum >= 1 && pageNum <= 604) {
       render.pageCard(pageNum, juzContainer);
     }
     
-    // Filter juzs by search term
     const filtered = state.allJuzs.filter(juz => 
       juz.number?.toString().includes(term) ||
       juz.surahs?.some(surahNumber => {
@@ -228,22 +233,21 @@ const filter = {
       })
     );
     
-    // Render filtered juzs
     if (filtered.length > 0) {
       const fragment = document.createDocumentFragment();
       filtered.forEach(juz => {
         const div = document.createElement('div');
-        div.className = "bg-white rounded-lg shadow-md p-4 sm:p-3 md:p-4 lg:p-5 hover:shadow-lg transition-shadow cursor-pointer";
+        div.className = "bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-3 md:p-4 lg:p-5 hover:shadow-lg dark:hover:bg-gray-700 transition-shadow cursor-pointer";
         div.innerHTML = `
           <div class="flex items-center gap-3 sm:gap-2 md:gap-3 lg:gap-4">
-            <div class="bg-emerald-100 text-emerald-800 rounded-full w-10 h-10 sm:w-8 sm:h-8 md:w-10 md:h-10 flex items-center justify-center flex-shrink-0 mr-1">
+            <div class="bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-gray-200 rounded-full w-10 h-10 sm:w-8 sm:h-8 md:w-10 md:h-10 flex items-center justify-center flex-shrink-0 mr-1">
               <h4 class="font-bold text-base sm:text-sm md:text-base">${juz.number}</h4>
             </div>
             <div class="flex-1 min-w-0">
               <div class="flex justify-between items-center">
-                <h4 class="font-bold text-lg sm:text-base md:text-lg lg:text-xl text-emerald-700 truncate">Juz ${juz.number}</h4>
+                <h4 class="font-bold text-lg sm:text-base md:text-lg lg:text-xl text-emerald-700 dark:text-gray-200 truncate">Juz ${juz.number}</h4>
               </div>
-              <div class="flex items-center text-sm sm:text-xs md:text-sm text-gray-500 mt-1 gap-1 sm:gap-0.5 md:gap-1 whitespace-nowrap">
+              <div class="flex items-center text-sm sm:text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1 gap-1 sm:gap-0.5 md:gap-1 whitespace-nowrap">
                 <span>Page ${juz.start}-${juz.end}</span>
                 <span> • </span>
                 <span class="truncate">${
@@ -266,7 +270,6 @@ const filter = {
   }
 };
 
-
 // Mode Management
 const mode = {
   toggle: (newMode) => {
@@ -286,6 +289,7 @@ const mode = {
   }
 };
 
+// Last Reading Functions
 // Last Reading Functions
 const lastReading = {
   init: () => {
@@ -327,14 +331,16 @@ const handlers = {
     state.currentMode === 'surah' 
       ? filter.surahs('') 
       : filter.juzs('');
+  },
+
+  darkModeToggle: () => {
+    utils.toggleDarkMode(!state.isDarkMode);
   }
 };
 
 // Initialize App
 const init = () => {
-  console.log('DOM loaded, surahData:', surahData);
-  console.log('juzInfo:', juzInfo);
-  
+
   if (typeof surahData === 'undefined') {
     console.error('surahData is not defined');
     utils.renderError(elements.surahContainer, 'Surah data not found.');
@@ -353,13 +359,19 @@ const init = () => {
   render.surah(state.allSurahs);
   render.juz(state.allJuzs);
   lastReading.init();
-  
+  utils.toggleDarkMode(state.isDarkMode);
+
   // Event Listeners
   elements.searchInput.addEventListener('input', handlers.searchInput);
   elements.clearSearchBtn.addEventListener('click', handlers.clearSearch);
   elements.surahModeBtn.addEventListener('click', () => mode.toggle('surah'));
   elements.juzModeBtn.addEventListener('click', () => mode.toggle('juz'));
   elements.lastReadingBtn.addEventListener('click', lastReading.handleClick);
+  elements.darkModeToggle.forEach(button => {
+    button.addEventListener('click', handlers.darkModeToggle);
+  });
+  console.log('Dark mode loaded from:', localStorage.getItem('darkMode') !== null ? 'localStorage' : 'system preference');
+
 };
 
 // Start the app when DOM is loaded

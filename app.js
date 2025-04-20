@@ -324,16 +324,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
       filtered.forEach((surah) => {
         const item = document.createElement("div");
-        item.className = "p-3 hover:bg-emerald-50 cursor-pointer flex justify-between items-center transition-colors";
+        item.className = "p-3 hover:bg-emerald-50 dark:hover:bg-gray-100/20 cursor-pointer flex justify-between items-center transition-colors";
         item.innerHTML = `
           <div class="flex-1 min-w-0">
-            <span class="font-medium text-emerald-700 truncate">${surah.number}. ${surah.name}</span>
-            <div class="flex items-center mt-1 text-xs text-gray-500">
+            <span class="font-medium text-emerald-700 dark:text-emerald-300 truncate">${surah.number}. ${surah.name}</span>
+            <div class="flex items-center mt-1 text-xs text-gray-500 dark:text-gray-400">
               <span class="mr-2">Page ${surah.page}</span>
-              <span class="px-1.5 py-0.5 bg-gray-100 rounded-full text-xs">${surah.revelation}</span>
+              <span class="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded-full text-xs">${surah.revelation}</span>
             </div>
           </div>
-          <span class="text-xs bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full whitespace-nowrap ml-2">
+          <span class="text-xs bg-emerald-100 dark:bg-emerald-100/30 text-emerald-700 dark:text-emerald-300 px-2.5 py-1 rounded-full whitespace-nowrap ml-2">
             Juz ${Array.isArray(surah.juz) ? surah.juz.join(",") : surah.juz}
           </span>
         `;
@@ -408,15 +408,15 @@ document.addEventListener("DOMContentLoaded", function () {
     elements.list.innerHTML = "";
     juzInfo.forEach((juz) => {
       const item = document.createElement("div");
-      item.className = "p-3 hover:bg-emerald-50 cursor-pointer transition-colors";
+      item.className = "p-3 hover:bg-emerald-50 dark:hover:bg-gray-100/20 cursor-pointer transition-colors";
       item.innerHTML = `
         <div class="flex items-center justify-between w-full">
-          <div class="py-0.5 font-bold text-emerald-600">Juz ${juz.number}</div>
-          <span class="text-xs text-gray-500 bg-gray-100 rounded-full px-2 py-0.5 whitespace-nowrap">
+          <div class="py-0.5 font-bold text-emerald-600 dark:text-emerald-300">Juz ${juz.number}</div>
+          <span class="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-full px-2 py-0.5 whitespace-nowrap">
             Pages ${juz.start}-${juz.end}
           </span>
         </div>
-        <div class="text-xs text-gray-500 mt-1 truncate">${juz.surahs
+        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">${juz.surahs
           .map((s) => {
             const surah = surahData.find((sd) => sd.number === s);
             return surah ? surah.name : "";
@@ -706,7 +706,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     singlePageMode = window.innerWidth < 768; // Set mode berdasarkan lebar layar
     updateButtonStyles();
-
+    // Initialize dark mode from localStorage
+    const isDarkMode = localStorage.getItem('darkMode') === 'true' || (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    document.documentElement.classList.toggle('dark', isDarkMode);
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+        if (!localStorage.getItem('darkMode')) {
+            document.documentElement.classList.toggle('dark', e.matches);
+        }
+    });
+    console.log('Dark mode loaded from:', localStorage.getItem('darkMode') !== null ? 'localStorage' : 'system preference');
     
   }
 
