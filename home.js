@@ -372,6 +372,19 @@ const init = () => {
   });
   console.log('Dark mode loaded from:', localStorage.getItem('darkMode') !== null ? 'localStorage' : 'system preference');
 
+  let isExiting = false; // Untuk mencegah multiple trigger
+
+  window.addEventListener("popstate", function () {
+    if (window.location.pathname.endsWith("index.html") || window.location.pathname === "/") {
+      if (!isExiting) {
+        isExiting = true;
+        alert("Tekan tombol kembali lagi untuk keluar."); // Opsional: Tampilkan pesan konfirmasi
+        setTimeout(() => (isExiting = false), 2000); // Reset setelah 2 detik
+      } else {
+        window.close(); // Menutup halaman (tidak semua browser mendukung)
+      }
+    }
+  });
 };
 
 // Start the app when DOM is loaded

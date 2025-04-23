@@ -7,6 +7,7 @@
     <title>Jadwal Sholat - Qur'an WebView</title>
     <script src="https://cdn.tailwindcss.com/3.4.14"></script>
     <script src="https://kit.fontawesome.com/0a9f84347c.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
     <script>tailwind.config = {darkMode: 'class',}</script>
     <link rel="stylesheet" href="style.css">
     <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
@@ -32,10 +33,16 @@
     <!-- Main Content -->
     <div class="container mx-auto px-4 py-6">
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 mb-6 border-emerald-100">
-            <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-3">Jadwal Sholat Hari Ini</h2>
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">Jadwal Sholat Hari Ini</h2>
+            <button id="refresh-button" onclick="forceRefreshAndClearCache()" class="text-emerald-500 hover:text-emerald-700 flex items-center text-sm font-semibold transition-colors duration-200 group whitespace-nowrap ">
+              <i class="fas fa-sync-alt mr-1 group-hover:scale-110 transition-transform duration-200"></i>Segarkan
+            </button>
+          </div>
+            
 
             <!-- Date and Location Section -->
-            <div class="space-y-3 mb-4">
+            <div class="space-y-3">
               <div class="text-sm text-emerald-600 dark:text-gray-200 font-semibold" id="combined-date">Hari, Tanggal</div>
               
               <div class="flex items-center justify-between">
@@ -56,7 +63,7 @@
             </div>
           
             <!-- Location Input (Hidden by default) -->
-            <div id="location-input" class="hidden mb-4">
+            <div id="location-input" class="hidden mt-4">
               <div class="flex gap-2">
                 <div class="flex-1 relative">
                   <input 
@@ -113,7 +120,7 @@
           </div>
         <!-- Monthly Schedule -->
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6">
-            <h3 id="monthly-prayer-title" class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Jadwal Sholat Bulan Ini</h3>
+            <h3 id="monthly-prayer-title" class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Jadwal Sholat 30 hari ke depan</h3>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>

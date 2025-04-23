@@ -6,7 +6,6 @@ const elements = {
     combinedDate: document.getElementById('combined-date'),
     dailyPrayerTimes: document.getElementById('daily-prayer-times'),
     monthlyPrayerTimes: document.getElementById('monthly-prayer-times'),
-    monthlyPrayerTitle: document.getElementById('monthly-prayer-title'),
 };
 
 const state = {
@@ -16,14 +15,7 @@ const state = {
         longitude: 106.8456,
         dailyTimings: null,
         monthlyTimings: null,
-        hijriAdjustment: {
-            offsets: {
-                'Indonesia': 0,
-                'Saudi Arabia': 0,
-                'default': 0
-            },
-            method: 15
-        }
+        
     },
 };
 
@@ -72,112 +64,65 @@ const domUtils = {
         if (container) container.innerHTML = `<p class="text-center text-red-600">${message}</p>`;
     },
     toggleLocationInput: () => elements.locationInput?.classList.toggle('hidden')
+
 };
 
 // Time Utilities
 const timeUtils = {
     getNextPrayer: (timings) => {
         if (!timings) return 'Subuh';
-
-        const now = new Date();
-        const currentTime = now.getHours() * 60 + now.getMinutes();
-
-        return [
+        const now = new Date().getHours() * 60 + new Date().getMinutes();
+        const prayers = [
             { name: 'Subuh', time: timings.Fajr },
             { name: 'Dzuhur', time: timings.Dhuhr },
             { name: 'Ashar', time: timings.Asr },
             { name: 'Maghrib', time: timings.Maghrib },
             { name: 'Isya', time: timings.Isha }
-        ].find(prayer => {
-            if (!prayer.time) return false;
-            const [hours, minutes] = prayer.time.replace(/\s*\(.*\)\s*/g, '').trim().split(':').map(Number);
-            return (hours * 60 + minutes) > currentTime;
-        })?.name || 'Subuh';
+        ];
+        const next = prayers.find(prayer => {
+            const [hours, minutes] = prayer.time.split(' ')[0].split(':').map(Number);
+            return (hours * 60 + minutes) > now;
+        });
+        return next?.name || 'Subuh';
     },
 
     calculateImsakTime: (fajrTime) => {
-        if (!fajrTime || typeof fajrTime !== 'string' || !fajrTime.includes(':')) return 'N/A';
-
-        const [hours, minutes] = fajrTime.replace(/\s*\(.*\)\s*/g, '').trim().split(':').map(Number);
-        if (isNaN(hours) || isNaN(minutes)) return 'N/A';
-
+        if (!fajrTime) return 'N/A';
+        const [hours, minutes] = fajrTime.split(' ')[0].split(':').map(Number);
         const date = new Date();
         date.setHours(hours, minutes - 10, 0);
         return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
     },
 
-    formatGregorianDate: (dateStr) => {
-        const date = new Date(dateStr.split('-').reverse().join('-'));
-        return date.toLocaleDateString('id-ID', {
-            weekday: 'long',
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric'
+    formatDate: (gregorian, hijri) => {
+        const date = new Date(gregorian.date.split('-').reverse().join('-'));
+        const gregorianStr = date.toLocaleDateString('id-ID', {
+            weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
         });
-    },
-
-    adjustHijriDate: (hijriDate, timings, location) => {
-        if (!hijriDate) return hijriDate;
-
-        const country = location.split(',').pop().trim();
-        const offset = state.prayer.hijriAdjustment.offsets[country] ??
-            state.prayer.hijriAdjustment.offsets['default'];
-
-        const now = new Date();
-        const maghribTime = timings.Maghrib?.replace(/\s*\(.*\)\s*/g, '').trim();
-        let adjustedDay = parseInt(hijriDate.day);
-
-        if (maghribTime) {
-            const [maghribHours, maghribMinutes] = maghribTime.split(':').map(Number);
-            const maghribDate = new Date();
-            maghribDate.setHours(maghribHours, maghribMinutes, 0);
-
-            if (now < maghribDate) {
-                adjustedDay -= 1;
-            }
-        }
-
-        adjustedDay += offset;
-
-        if (adjustedDay <= 0) {
-            adjustedDay += 30;
-            console.warn('Penyesuaian bulan Hijriah belum diimplementasikan sepenuhnya');
-        }
-
-        return {
-            ...hijriDate,
-            day: adjustedDay.toString()
-        };
-    },
-
-    formatHijriDate: (hijriDate) => {
-        const hijriMonth = hijriMonthsName[hijriDate.month.number];
-        return hijriDate ? `${hijriDate.day} ${hijriMonth} ${hijriDate.year}` : 'N/A';
+        const hijriDay = hijri.day - 1;             // Adjust hijri day to correct value
+        
+        const hijriStr = `${hijriDay} ${hijriMonthsName[hijri.month.number]} ${hijri.year}`;
+        console.log('Hijri Date:', hijriDay, 'type:', typeof hijriDay);
+        return `${gregorianStr} / ${hijriStr}`;
     }
 };
 
 // API Utilities
 const apiUtils = {
-    fetchWithRetry: async (url, options = {}, retries = 3) => {
-        try {
-            const response = await fetch(url, {
-                ...options,
-                headers: {
-                    'Accept': 'application/json',
-                    ...options.headers,
-                },
-                credentials: 'omit',
-                mode: 'cors',
-            });
-
-            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-            return await response.json();
-        } catch (error) {
-            if (retries > 0) {
+    fetchWithRetry: async (url, retries = 3) => {
+        for (let i = 0; i < retries; i++) {
+            try {
+                const response = await fetch(url, {
+                    headers: { 'Accept': 'application/json' },
+                    credentials: 'omit',
+                    mode: 'cors'
+                });
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                if (i === retries - 1) throw error;
                 await new Promise(resolve => setTimeout(resolve, 1000));
-                return apiUtils.fetchWithRetry(url, options, retries - 1);
             }
-            throw error;
         }
     },
 
@@ -186,23 +131,35 @@ const apiUtils = {
         const cached = cacheUtils.get(cacheKey);
         if (cached) return cached;
 
-        const url = `https://api.aladhan.com/v1/timings?latitude=${latitude}&longitude=${longitude}&method=${state.prayer.hijriAdjustment.method}&school=0&tune=2,2,2,2,2,2,2,2,2`;
+        const date = new Date();
+        const url = `https://api.aladhan.com/v1/timings/${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}?latitude=${latitude}&longitude=${longitude}&method=20&shafaq=general&tune=2,2,2,2,2,2,2,2,2&calendarMethod=UAQ`;
         const data = await apiUtils.fetchWithRetry(url);
         if (data.code !== 200) throw new Error('Invalid API response');
-        cacheUtils.set(cacheKey, data, 24 * 60 * 60 * 1000); // Cache for 24 hours
+
+        cacheUtils.set(cacheKey, data, 24 * 60 * 60 * 1000);
         return data;
     },
 
     getMonthlyPrayerTimes: async (latitude, longitude, date = new Date()) => {
-        const month = date.getMonth() + 1;
-        const year = date.getFullYear();
-        const cacheKey = `monthlyPrayerTimes_${latitude}_${longitude}_${month}_${year}`;
+        const startDate = new Date(date);
+        const endDate = new Date(date);
+        endDate.setDate(startDate.getDate() + 30); // Add 30 days to the start date
+    
+        const formatDate = (d) => {
+            const day = d.getDate().toString().padStart(2, '0');
+            const month = (d.getMonth() + 1).toString().padStart(2, '0');
+            const year = d.getFullYear();
+            return `${day}-${month}-${year}`;
+        };
+    
+        const cacheKey = `monthlyPrayerTimes_${latitude}_${longitude}_${formatDate(startDate)}_${formatDate(endDate)}`;
         const cached = cacheUtils.get(cacheKey);
         if (cached) return cached;
-
-        const url = `https://api.aladhan.com/v1/calendar?latitude=${latitude}&longitude=${longitude}&method=${state.prayer.hijriAdjustment.method}&school=0&tune=2,2,2,2,2,2,2,2,2&month=${month}&year=${year}`;
+    
+        const url = `https://api.aladhan.com/v1/calendar/from/${formatDate(startDate)}/to/${formatDate(endDate)}?latitude=${latitude}&longitude=${longitude}&method=20&shafaq=general&tune=2,2,2,2,2,2,2,2,2&calendarMethod=UAQ`;
         const data = await apiUtils.fetchWithRetry(url);
         if (data.code !== 200) throw new Error('Invalid API response');
+    
         cacheUtils.set(cacheKey, data, 30 * 24 * 60 * 60 * 1000); // Cache for 30 days
         return data;
     },
@@ -214,7 +171,7 @@ const apiUtils = {
 
         const url = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`;
         const data = await apiUtils.fetchWithRetry(url);
-        cacheUtils.set(cacheKey, data, 7 * 24 * 60 * 60 * 1000); // Cache for 7 days
+        cacheUtils.set(cacheKey, data, 7 * 24 * 60 * 60 * 1000);
         return data;
     },
 
@@ -223,11 +180,42 @@ const apiUtils = {
         const cacheKey = `searchCities_${query.toLowerCase()}`;
         const cached = cacheUtils.get(cacheKey);
         if (cached) return cached;
-
-        const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=5&accept-language=id`;
+    
+        const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=20&accept-language=id`;
         const data = await apiUtils.fetchWithRetry(url);
-        cacheUtils.set(cacheKey, data, 24 * 60 * 60 * 1000); // Cache for 24 hours
-        return data;
+    
+        // Prioritaskan wilayah Indonesia
+        const indonesiaCities = data.filter(city => city.display_name?.includes('Indonesia'));
+        const otherCities = data.filter(city => !city.display_name?.includes('Indonesia'));
+    
+        // Gabungkan hasil dengan prioritas Indonesia di awal
+        const prioritizedResults = [...indonesiaCities, ...otherCities];
+    
+        // Normalisasi data untuk pencarian
+        const normalizedResults = prioritizedResults.map(city => ({
+            ...city,
+            normalized_display_name: city.display_name.toLowerCase().replace(/[^a-z0-9\s]/g, ''),
+        }));
+    
+        // Pencarian autocomplete (awalan query)
+        const autocompleteMatches = normalizedResults.filter(city =>
+            city.normalized_display_name.startsWith(query.toLowerCase())
+        );
+    
+        // Gunakan Fuse.js untuk pencarian fuzzy
+        const fuse = new Fuse(normalizedResults, {
+            keys: ['normalized_display_name'], // Gunakan nama yang dinormalisasi
+            threshold: 0.8, // Tingkat sensitivitas pencarian
+        });
+    
+        const fuzzyResults = fuse.search(query).map(result => result.item);
+    
+        // Gabungkan hasil autocomplete dengan hasil Fuse.js
+        const combinedResults = [...new Set([...autocompleteMatches, ...fuzzyResults])];
+    
+        // Cache hasil pencarian
+        cacheUtils.set(cacheKey, combinedResults, 24 * 60 * 60 * 1000);
+        return combinedResults;
     }
 };
 
@@ -264,27 +252,20 @@ const locationUtils = {
     },
 
     parseLocationFromSelection: (displayName, cityName) => {
-        const parts = displayName.split(',').map(part => part.trim()).filter(Boolean);
-        const locationParts = [cityName];
-
-        if (parts.length > 2) {
-            const cityIndex = parts.length - 3;
-            if (cityIndex >= 0 && parts[cityIndex] !== cityName) {
-                locationParts.push(parts[cityIndex]);
-            }
-            if (parts.length - 2 >= 0 && parts[parts.length - 2] !== cityName &&
-                (cityIndex < 0 || parts[parts.length - 2] !== parts[cityIndex])) {
-                locationParts.push(parts[parts.length - 2]);
-            }
-            locationParts.push(parts[parts.length - 1]);
-        } else {
-            if (parts.length - 2 >= 0) {
-                locationParts.push(parts[parts.length - 2]);
-            }
-            locationParts.push(parts[parts.length - 1] || 'Indonesia');
-        }
-
-        return locationParts.join(', ');
+        const parts = displayName.split(',')
+            .map(part => part.trim())
+            .filter(part => part && !/^\d+$/.test(part)); // Exclude numeric parts
+        
+        // Keep only unique parts and prioritize city name
+        const uniqueParts = [...new Set([cityName, ...parts])];
+        
+        // Ensure we don't repeat the same information
+        const filteredParts = uniqueParts.filter((part, index) => {
+            if (index === 0) return true;
+            return !part.includes(cityName) && !cityName.includes(part);
+        });
+        
+        return filteredParts.slice(0, 3).join(', '); // Max 3 parts
     },
 
     detectLocation: async (forceRefresh = false) => {
@@ -377,31 +358,38 @@ const locationUtils = {
 
     handleCitySelection: (selectedItem) => {
         if (!selectedItem) return;
-
+    
         const cityName = selectedItem.querySelector('span.font-medium')?.textContent || '';
         const displayName = selectedItem.dataset.displayName || '';
-        const lat = selectedItem.dataset.lat;
-        const lon = selectedItem.dataset.lon;
-
+        const [lat, lon] = [selectedItem.dataset.lat, selectedItem.dataset.lon];
+    
         if (!cityName || !lat || !lon) {
             console.error('Invalid city selection:', { cityName, lat, lon });
             return;
         }
-
-        if (elements.cityInput) {
-            elements.cityInput.value = cityName;
-        }
-
+    
+        // Update UI
+        if (elements.cityInput) elements.cityInput.value = cityName;
         domUtils.hide(elements.cityDropdown);
-
+    
+        // Update state
         state.prayer.currentLocation = locationUtils.parseLocationFromSelection(displayName, cityName);
         state.prayer.latitude = parseFloat(lat);
         state.prayer.longitude = parseFloat(lon);
-
-        cacheUtils.set('location', state.prayer, 30 * 24 * 60 * 60 * 1000); // Cache for 30 days
+    
+        // Cache and render
+        cacheUtils.set('location', state.prayer, 30 * 24 * 60 * 60 * 1000);
         console.log('City selected:', state.prayer);
         renderUtils.updateAll();
     }
+};
+
+const debounce = (func, wait) => {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
 };
 
 // Render Utilities
@@ -410,115 +398,75 @@ const renderUtils = {
         renderUtils.prayerLocation();
         renderUtils.dailyPrayerSchedule();
         renderUtils.monthlyPrayerSchedule();
-        renderUtils.monthlyPrayerTitle();
     },
 
     prayerLocation: () => {
-        if (elements.currentLocation) {
-            elements.currentLocation.textContent = state.prayer.currentLocation;
-        }
+        elements.currentLocation.textContent = state.prayer.currentLocation;
     },
 
     dailyPrayerSchedule: async () => {
-        if (!elements.dailyPrayerTimes) return;
-
         try {
             const data = await apiUtils.getPrayerTimes(state.prayer.latitude, state.prayer.longitude);
+            const timings = data.data.timings;
+            timings.Imsak = timeUtils.calculateImsakTime(timings.Fajr);
 
-            state.prayer.dailyTimings = data.data.timings;
+            elements.combinedDate.textContent = timeUtils.formatDate(data.data.date.gregorian, data.data.date.hijri);
 
-            if (elements.combinedDate) {
-                const gregorianDate = timeUtils.formatGregorianDate(data.data.date.gregorian.date);
-                const adjustedHijri = timeUtils.adjustHijriDate(
-                    data.data.date.hijri,
-                    data.data.timings,
-                    state.prayer.currentLocation
-                );
-                const hijriDate = timeUtils.formatHijriDate(adjustedHijri);
-                elements.combinedDate.textContent = `${gregorianDate} / ${hijriDate}`;
-            }
-
-            const adjustedTimings = {
-                ...state.prayer.dailyTimings,
-                Imsak: timeUtils.calculateImsakTime(state.prayer.dailyTimings.Fajr)
-            };
-
-            const nextPrayer = timeUtils.getNextPrayer(adjustedTimings);
+            const nextPrayer = timeUtils.getNextPrayer(timings);
             const prayerTimes = [
-                { name: 'Imsak', time: adjustedTimings.Imsak },
-                { name: 'Subuh', time: adjustedTimings.Fajr || 'N/A' },
-                { name: 'Terbit', time: adjustedTimings.Sunrise || 'N/A' },
-                { name: 'Dzuhur', time: adjustedTimings.Dhuhr || 'N/A' },
-                { name: 'Ashar', time: adjustedTimings.Asr || 'N/A' },
-                { name: 'Maghrib', time: adjustedTimings.Maghrib || 'N/A' },
-                { name: 'Isya', time: adjustedTimings.Isha || 'N/A' }
+                { name: 'Imsak', time: timings.Imsak },
+                { name: 'Subuh', time: timings.Fajr },
+                { name: 'Terbit', time: timings.Sunrise },
+                { name: 'Dzuhur', time: timings.Dhuhr },
+                { name: 'Ashar', time: timings.Asr },
+                { name: 'Maghrib', time: timings.Maghrib },
+                { name: 'Isya', time: timings.Isha }
             ];
 
             elements.dailyPrayerTimes.innerHTML = prayerTimes.map(prayer => {
                 const isNext = prayer.name === nextPrayer;
                 return `
-                    <div class="bg-white  rounded-lg shadow-lg dark:shadow-xl p-5 sm:p-6 md:p-5 lg:p-6 hover:shadow-xl transition-all duration-300 dark:border-2 dark:hover:bg-gray-700 ${isNext ? 'border-l-4 border-emerald-600 bg-emerald-50 dark:bg-gray-900' : 'border-l-4 border-gray-200 dark:border-gray-700 dark:bg-gray-800'
-                    }">
+                    <div class="bg-white rounded-lg shadow-lg p-5 hover:shadow-xl transition-all duration-200 dark:border-2 dark:hover:bg-gray-700 ${isNext ? 'border-l-4 border-emerald-600 bg-emerald-50 dark:bg-gray-900' : 'border-l-4 border-gray-200 dark:border-gray-700 dark:bg-gray-800'}">
                         <div class="flex justify-between items-center">
-                            <span class="text-base sm:text-sm md:text-base lg:text-base ${isNext ? 'font-bold text-emerald-700 dark:text-gray-200' : 'font-semibold text-gray-600 dark:text-gray-200'
-                    }">${prayer.name}</span>
-                            <span class="text-base sm:text-sm md:text-base lg:text-base ${isNext ? 'font-bold text-emerald-700 dark:text-gray-200' : 'text-gray-600 dark:text-gray-200'
-                    }">${prayer.time}</span>
+                            <span class="text-base ${isNext ? 'font-bold text-emerald-700 dark:text-gray-200' : 'font-semibold text-gray-600 dark:text-gray-200'}">${prayer.name}</span>
+                            <span class="text-base ${isNext ? 'font-bold text-emerald-700 dark:text-gray-200' : 'text-gray-600 dark:text-gray-200'}">${prayer.time.split(' ')[0]}</span>
                         </div>
                     </div>
                 `;
             }).join('');
         } catch (error) {
             console.error('Error fetching daily prayer times:', error);
-            domUtils.renderError(elements.dailyPrayerTimes, 'Terjadi kesalahan saat mengambil data.');
-            if (elements.combinedDate) elements.combinedDate.textContent = 'N/A';
+            elements.dailyPrayerTimes.innerHTML = '<p class="text-center text-red-600">Gagal memuat jadwal sholat.</p>';
+            elements.combinedDate.textContent = 'N/A';
         }
     },
 
     monthlyPrayerSchedule: async () => {
-        if (!elements.monthlyPrayerTimes) return;
-
         try {
             const data = await apiUtils.getMonthlyPrayerTimes(state.prayer.latitude, state.prayer.longitude);
-
-            state.prayer.monthlyTimings = data.data;
-
             elements.monthlyPrayerTimes.innerHTML = data.data.map(day => {
-                const adjustedTimings = {
-                    ...day.timings,
-                    Imsak: timeUtils.calculateImsakTime(day.timings.Fajr)
-                };
-
+                const timings = day.timings;
+                timings.Imsak = timeUtils.calculateImsakTime(timings.Fajr);
                 const date = new Date(day.date.gregorian.date.split('-').reverse().join('-'));
                 const formattedDate = date.toLocaleDateString('id-ID', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric'
+                    day: 'numeric', month: 'long', year: 'numeric'
                 });
 
                 return `
-                    <tr class="hover:bg-emerald-50 dark:hover:bg-emerald-300/10 dark:text-gray-200 transition-colors duration-200">
+                    <tr class="hover:bg-emerald-50 dark:hover:bg-emerald-300/20 dark:text-gray-200 transition-colors duration-200">
                         <td class="p-3">${formattedDate}</td>
-                        <td class="p-3">${adjustedTimings.Fajr || 'N/A'}</td>
-                        <td class="p-3">${adjustedTimings.Dhuhr || 'N/A'}</td>
-                        <td class="p-3">${adjustedTimings.Asr || 'N/A'}</td>
-                        <td class="p-3">${adjustedTimings.Maghrib || 'N/A'}</td>
-                        <td class="p-3">${adjustedTimings.Isha || 'N/A'}</td>
+                        <td class="p-3">${timings.Fajr}</td>
+                        <td class="p-3">${timings.Dhuhr}</td>
+                        <td class="p-3">${timings.Asr}</td>
+                        <td class="p-3">${timings.Maghrib}</td>
+                        <td class="p-3">${timings.Isha}</td>
                     </tr>
                 `;
             }).join('');
         } catch (error) {
             console.error('Error fetching monthly prayer times:', error);
-            domUtils.renderError(elements.monthlyPrayerTimes, 'Terjadi kesalahan saat mengambil data.');
+            elements.monthlyPrayerTimes.innerHTML = '<p class="text-center text-red-600">Gagal memuat jadwal sholat.</p>';
         }
-    },
-
-    monthlyPrayerTitle: () => {
-        if (!elements.monthlyPrayerTitle) return;
-
-        elements.monthlyPrayerTitle.innerHTML = `
-            <h3>Jadwal Sholat Bulan ${new Date().toLocaleString('id-ID', { month: 'long' })}</h3>
-        `;
     },
 
     showDropdown: (items) => {
@@ -530,40 +478,53 @@ const renderUtils = {
         }
 
         elements.cityDropdown.innerHTML = items.map(city => `
-            <div class="dropdown-item px-3 py-2 hover:bg-gray-100 cursor-pointer transition-colors duration-200"
+            <div class="dropdown-item px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-200"
                  data-lat="${city.lat}"
                  data-lon="${city.lon}"
                  data-display-name="${city.display_name || ''}">
-                <span class="font-medium">${city.display_name ? city.display_name.split(',')[0] : 'Unknown'}</span>
-                <span class="text-gray-500 text-sm">${city.display_name ? `(${city.display_name.split(',').slice(1, 3).join(', ')})` : ''
-            }</span>
+                <span class="font-medium text-black dark:text-gray-200">${city.display_name ? city.display_name.split(',')[0] : 'Unknown'}</span>
+                <span class="text-gray-500 dark:text-gray-400 text-sm">${city.display_name ? `(${city.display_name.split(',').slice(1, 4).join(', ')})` : ''}</span>
             </div>
         `).join('');
 
         domUtils.show(elements.cityDropdown);
+    },
+    showLoading: (container) => {
+        container.innerHTML = `
+            <div class="flex items-center px-3 py-2 text-gray-500 dark:text-gray-400">Memuat...</div>
+        `;
     }
 };
 
 // Event Handlers
 const eventHandlers = {
     handleCityInput: async (e) => {
-        e.target.value = e.target.value
-            .split(' ')
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-            .join(' ');
         const query = e.target.value.trim();
-
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            await locationUtils.updateLocation(query);
+        if (!query || query.length < 3) {
+            domUtils.hide(elements.cityDropdown);
             return;
         }
-
-        if (query.length >= 3) {
+    
+        renderUtils.showLoading(elements.cityDropdown);
+        domUtils.show(elements.cityDropdown);
+    
+        try {
             const cities = await apiUtils.searchCities(query);
-            renderUtils.showDropdown(cities);
-        } else {
-            domUtils.hide(elements.cityDropdown);
+            if (cities.length === 0) {
+                elements.cityDropdown.innerHTML = `
+                    <div class="px-3 py-2 text-gray-500 dark:text-gray-400">
+                        Tidak ditemukan hasil untuk "${query}"
+                    </div>
+                `;
+            } else {
+                renderUtils.showDropdown(cities);
+            }
+        } catch (error) {
+            elements.cityDropdown.innerHTML = `
+                <div class="px-3 py-2 text-red-500">
+                    Gagal memuat hasil pencarian
+                </div>
+            `;
         }
     },
 
@@ -571,7 +532,10 @@ const eventHandlers = {
         const items = elements.cityDropdown?.querySelectorAll('.dropdown-item');
         if (!items || items.length === 0) return;
 
-        let current = Array.from(items).findIndex(item => item.classList.contains('bg-gray-200'));
+        let current = Array.from(items).findIndex(item => 
+            item.classList.contains('bg-gray-200') || 
+            item.classList.contains('dark:bg-gray-700')
+        );
 
         if (e.key === 'ArrowDown') {
             e.preventDefault();
@@ -582,12 +546,16 @@ const eventHandlers = {
         } else if (e.key === 'Enter' && current >= 0) {
             e.preventDefault();
             locationUtils.handleCitySelection(items[current]);
+            domUtils.hide(elements.locationInput);
+
             return;
         }
 
-        items.forEach(item => item.classList.remove('bg-gray-200'));
+        items.forEach(item => {
+            item.classList.remove('bg-gray-200', 'dark:bg-gray-700');
+        });
         if (current >= 0) {
-            items[current].classList.add('bg-gray-200');
+            items[current].classList.add('bg-gray-200', 'dark:bg-gray-700');
             items[current].scrollIntoView({ block: 'nearest' });
         }
     },
@@ -630,10 +598,17 @@ const init = () => {
     if (elements.cityInput) {
         let searchTimeout;
 
-        elements.cityInput.addEventListener('input', (e) => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => eventHandlers.handleCityInput(e), 300);
-        });
+        let lastQuery = '';
+elements.cityInput.addEventListener('input', debounce(async (e) => {
+    const query = e.target.value.trim();
+    if (query === lastQuery || query.length < 3) {
+        if (query.length < 3) domUtils.hide(elements.cityDropdown);
+        return;
+    }
+    
+    lastQuery = query;
+    await eventHandlers.handleCityInput(e);
+}, 500));
 
         elements.cityInput.addEventListener('keydown', eventHandlers.handleCityKeyDown);
     }
@@ -655,6 +630,21 @@ const init = () => {
         }
     });
     console.log('Dark mode loaded from:', localStorage.getItem('darkMode') !== null ? 'localStorage' : 'system preference');
+
+    // Tangkap event tombol kembali
+    window.addEventListener("popstate", function () {
+        // Arahkan pengguna ke homepage
+        window.location.href = "index.html";
+    });
 };
+
+function forceRefreshAndClearCache() {
+    console.log('Clearing cache and forcing location refresh...');
+    localStorage.removeItem('location'); // Hapus cache lokasi
+    localStorage.removeItem('prayerTimes'); // Hapus cache waktu sholat harian
+    localStorage.removeItem('monthlyPrayerTimes'); // Hapus cache waktu sholat bulanan
+    cacheUtils.set('location', null, 0); // Clear location cache
+    locationUtils.detectLocation(true); // Force refresh location
+}
 
 document.addEventListener('DOMContentLoaded', init);
