@@ -99,7 +99,7 @@ const timeUtils = {
         const gregorianStr = date.toLocaleDateString('id-ID', {
             weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
         });
-        const hijriDay = hijri.day - 1;             // Adjust hijri day to correct value
+        const hijriDay = hijri.day;             // Adjust hijri day to correct value
         
         const hijriStr = `${hijriDay} ${hijriMonthsName[hijri.month.number]} ${hijri.year}`;
         console.log('Hijri Date:', hijriDay, 'type:', typeof hijriDay);
